@@ -1,0 +1,3976 @@
+文法
+
+    0 $accept: Program $end
+
+    1 $@1: ε
+
+    2 Program: $@1 GlobalStmtList
+    3        | ε
+
+    4 GlobalStmtList: GlobalStmtList GlobalStmt
+    5               | GlobalStmt
+
+    6 GlobalStmt: DefineVariableStmt
+    7           | FunctionDefStmt
+
+    8 DefineVariableStmt: VARIABLE_T IDENT VAL_ASSIGN Expression ';'
+
+    9 $@2: ε
+
+   10 FunctionDefStmt: VARIABLE_T IDENT $@2 '(' FunctionParameterStmtList ')' '{' StmtList '}'
+
+   11 $@3: ε
+
+   12 FunctionDefStmt: VARIABLE_T IDENT '[' ']' $@3 '(' FunctionParameterStmtList ')' '{' StmtList '}'
+
+   13 FunctionParameterStmtList: FunctionParameterStmtList ',' FunctionParameterStmt
+   14                          | FunctionParameterStmt
+   15                          | ε
+
+   16 FunctionParameterStmt: VARIABLE_T IDENT
+   17                      | VARIABLE_T IDENT '[' ']'
+
+   18 FunctionList: FunctionList ',' Expression
+   19             | Expression
+   20             | ε
+
+   21 StmtList: StmtList FunctionStmt
+   22         | FunctionStmt
+
+   23 FunctionStmt: ';'
+   24             | Stmt
+   25             | AssignmentStmt ';'
+   26             | DefineStmt ';'
+   27             | IfStmt
+   28             | LoopStmt
+
+   29 AssignmentStmt: IdentExpression VAL_ASSIGN Expression
+   30               | IdentExpression ADD_ASSIGN Expression
+   31               | IdentExpression SUB_ASSIGN Expression
+   32               | IdentExpression MUL_ASSIGN Expression
+   33               | IdentExpression DIV_ASSIGN Expression
+   34               | IdentExpression REM_ASSIGN Expression
+   35               | IdentExpression SHR_ASSIGN Expression
+   36               | IdentExpression SHL_ASSIGN Expression
+   37               | IdentExpression BAN_ASSIGN Expression
+   38               | IdentExpression BOR_ASSIGN Expression
+   39               | IdentExpression BXO_ASSIGN Expression
+   40               | IdentExpression INC_ASSIGN
+   41               | IdentExpression DEC_ASSIGN
+
+   42 $@4: ε
+
+   43 $@5: ε
+
+   44 IfStmt: IF '(' Expression ')' $@4 '{' StmtList '}' $@5 ElseStmt
+
+   45 $@6: ε
+
+   46 IfStmt: IF '(' Expression ')' $@6 FunctionStmt
+
+   47 $@7: ε
+
+   48 ElseStmt: ELSE $@7 '{' StmtList '}'
+   49         | ε
+
+   50 LoopStmt: WhileStmt
+   51         | ForStmt
+
+   52 $@8: ε
+
+   53 $@9: ε
+
+   54 WhileStmt: WHILE $@8 '(' Expression ')' $@9 '{' StmtList '}'
+
+   55 $@10: ε
+
+   56 ForStmt: FOR $@10 '(' ForDefine ')' '{' StmtList '}'
+
+   57 ForDefine: InitDefine ';' Expression ';' IterativeDefine
+   58          | DefineStmt ':' Expression
+
+   59 InitDefine: DefineStmt
+   60           | AssignmentStmt
+   61           | ε
+
+   62 IterativeDefine: AssignmentStmt
+   63                | ε
+
+   64 DefineStmt: VARIABLE_T DefineVariables
+
+   65 DefineVariables: DefineVariables ',' Variable
+   66                | Variable
+
+   67 Variable: IDENT
+   68         | IDENT VAL_ASSIGN Expression
+   69         | IDENT '[' NumberExpression ']' '[' NumberExpression ']'
+   70         | IDENT '[' NumberExpression ']' VAL_ASSIGN '{' ArrayList '}'
+
+   71 ArrayList: ArrayList ',' Expression
+   72          | Expression
+   73          | ε
+
+   74 Stmt: COUT CoutParmListStmt ';'
+   75     | ReturnCondition
+   76     | BREAK ';'
+   77     | CONTINUE ';'
+   78     | CallFunction
+
+   79 CoutParmListStmt: CoutParmListStmt SHL Expression
+   80                 | SHL Expression
+
+   81 ReturnCondition: RETURN Expression ';'
+   82                | RETURN ';'
+
+   83 Expression: LogicExpression
+
+   84 LogicExpression: OrExpression
+
+   85 OrExpression: OrExpression LOR AndExpression
+   86             | AndExpression
+
+   87 AndExpression: AndExpression LAN BitOrExpression
+   88              | BitOrExpression
+
+   89 BitOrExpression: BitOrExpression BOR BitXorExpression
+   90                | BitXorExpression
+
+   91 BitXorExpression: BitXorExpression BXO BitAndExpression
+   92                 | BitAndExpression
+
+   93 BitAndExpression: BitAndExpression BAN EqualExpression
+   94                 | EqualExpression
+
+   95 EqualExpression: EqualExpression NEQ CompareExpression
+   96                | EqualExpression EQL CompareExpression
+   97                | CompareExpression
+
+   98 CompareExpression: CompareExpression GTR ShiftExpression
+   99                  | CompareExpression LES ShiftExpression
+  100                  | CompareExpression GEQ ShiftExpression
+  101                  | CompareExpression LEQ ShiftExpression
+  102                  | ShiftExpression
+
+  103 ShiftExpression: ShiftExpression SHR AddOPExpression
+  104                | AddOPExpression
+
+  105 AddOPExpression: AddOPExpression ADD MulOPExpression
+  106                | AddOPExpression SUB MulOPExpression
+  107                | MulOPExpression
+
+  108 MulOPExpression: MulOPExpression MUL CastExpression
+  109                | MulOPExpression DIV CastExpression
+  110                | MulOPExpression REM CastExpression
+  111                | CastExpression
+
+  112 CastExpression: '(' VARIABLE_T ')' UnsignNumberExpression
+  113               | UnsignNumberExpression
+
+  114 UnsignNumberExpression: SUB UnsignNumberExpression
+  115                       | NOT UnsignNumberExpression
+  116                       | LogicNotExpression
+
+  117 LogicNotExpression: BNT LogicNotExpression
+  118                   | BAN LogicNotExpression
+  119                   | CallFunction
+  120                   | PrimaryExpression
+
+  121 CallFunction: IDENT '(' FunctionList ')'
+
+  122 PrimaryExpression: '(' Expression ')'
+  123                  | STR_LIT
+  124                  | IdentExpression
+  125                  | BoolExpression
+  126                  | NumberExpression
+
+  127 IdentExpression: IDENT
+  128                | IDENT '[' Expression ']'
+  129                | IDENT '[' Expression ']' '[' Expression ']'
+
+  130 NumberExpression: INT_LIT
+  131                 | FLOAT_LIT
+
+  132 BoolExpression: BOOL_LIT
+
+
+終結語詞，附有它們出現處的規則
+
+    $end (0) 0
+    '(' (40) 10 12 44 46 54 56 112 121 122
+    ')' (41) 10 12 44 46 54 56 112 121 122
+    ',' (44) 13 18 65 71
+    ':' (58) 58
+    ';' (59) 8 23 25 26 57 74 76 77 81 82
+    '[' (91) 12 17 69 70 128 129
+    ']' (93) 12 17 69 70 128 129
+    '{' (123) 10 12 44 48 54 56 70
+    '}' (125) 10 12 44 48 54 56 70
+    error (256)
+    COUT (258) 74
+    SHR (259) 103
+    SHL (260) 79 80
+    BAN (261) 93 118
+    BOR (262) 89
+    BNT (263) 117
+    BXO (264) 91
+    ADD (265) 105
+    SUB (266) 106 114
+    MUL (267) 108
+    DIV (268) 109
+    REM (269) 110
+    NOT (270) 115
+    GTR (271) 98
+    LES (272) 99
+    GEQ (273) 100
+    LEQ (274) 101
+    EQL (275) 96
+    NEQ (276) 95
+    LAN (277) 87
+    LOR (278) 85
+    VAL_ASSIGN (279) 8 29 68 70
+    ADD_ASSIGN (280) 30
+    SUB_ASSIGN (281) 31
+    MUL_ASSIGN (282) 32
+    DIV_ASSIGN (283) 33
+    REM_ASSIGN (284) 34
+    BAN_ASSIGN (285) 37
+    BOR_ASSIGN (286) 38
+    BXO_ASSIGN (287) 39
+    SHR_ASSIGN (288) 35
+    SHL_ASSIGN (289) 36
+    INC_ASSIGN (290) 40
+    DEC_ASSIGN (291) 41
+    IF (292) 44 46
+    ELSE (293) 48
+    FOR (294) 56
+    WHILE (295) 54
+    RETURN (296) 81 82
+    BREAK (297) 76
+    CONTINUE (298) 77
+    VARIABLE_T <var_type> (299) 8 10 12 16 17 64 112
+    BOOL_LIT <b_var> (300) 132
+    INT_LIT <i_var> (301) 130
+    FLOAT_LIT <f_var> (302) 131
+    STR_LIT <s_var> (303) 123
+    IDENT <s_var> (304) 8 10 12 16 17 67 68 69 70 121 127 128 129
+
+
+非終結語詞，附有它們出現處的規則
+
+    $accept (59)
+        於左側： 0
+    Program (60)
+        於左側： 2 3
+        於右側： 0
+    $@1 (61)
+        於左側： 1
+        於右側： 2
+    GlobalStmtList (62)
+        於左側： 4 5
+        於右側： 2 4
+    GlobalStmt (63)
+        於左側： 6 7
+        於右側： 4 5
+    DefineVariableStmt (64)
+        於左側： 8
+        於右側： 6
+    FunctionDefStmt (65)
+        於左側： 10 12
+        於右側： 7
+    $@2 (66)
+        於左側： 9
+        於右側： 10
+    $@3 (67)
+        於左側： 11
+        於右側： 12
+    FunctionParameterStmtList (68)
+        於左側： 13 14 15
+        於右側： 10 12 13
+    FunctionParameterStmt (69)
+        於左側： 16 17
+        於右側： 13 14
+    FunctionList (70)
+        於左側： 18 19 20
+        於右側： 18 121
+    StmtList (71)
+        於左側： 21 22
+        於右側： 10 12 21 44 48 54 56
+    FunctionStmt (72)
+        於左側： 23 24 25 26 27 28
+        於右側： 21 22 46
+    AssignmentStmt (73)
+        於左側： 29 30 31 32 33 34 35 36 37 38 39 40 41
+        於右側： 25 60 62
+    IfStmt (74)
+        於左側： 44 46
+        於右側： 27
+    $@4 (75)
+        於左側： 42
+        於右側： 44
+    $@5 (76)
+        於左側： 43
+        於右側： 44
+    $@6 (77)
+        於左側： 45
+        於右側： 46
+    ElseStmt (78)
+        於左側： 48 49
+        於右側： 44
+    $@7 (79)
+        於左側： 47
+        於右側： 48
+    LoopStmt (80)
+        於左側： 50 51
+        於右側： 28
+    WhileStmt (81)
+        於左側： 54
+        於右側： 50
+    $@8 (82)
+        於左側： 52
+        於右側： 54
+    $@9 (83)
+        於左側： 53
+        於右側： 54
+    ForStmt (84)
+        於左側： 56
+        於右側： 51
+    $@10 (85)
+        於左側： 55
+        於右側： 56
+    ForDefine (86)
+        於左側： 57 58
+        於右側： 56
+    InitDefine (87)
+        於左側： 59 60 61
+        於右側： 57
+    IterativeDefine (88)
+        於左側： 62 63
+        於右側： 57
+    DefineStmt (89)
+        於左側： 64
+        於右側： 26 58 59
+    DefineVariables (90)
+        於左側： 65 66
+        於右側： 64 65
+    Variable <object_val> (91)
+        於左側： 67 68 69 70
+        於右側： 65 66
+    ArrayList <object_val> (92)
+        於左側： 71 72 73
+        於右側： 70 71
+    Stmt (93)
+        於左側： 74 75 76 77 78
+        於右側： 24
+    CoutParmListStmt (94)
+        於左側： 79 80
+        於右側： 74 79
+    ReturnCondition (95)
+        於左側： 81 82
+        於右側： 75
+    Expression <object_val> (96)
+        於左側： 83
+        於右側： 8 18 19 29 30 31 32 33 34 35 36 37 38 39 44 46 54 57 58 68 71 72 79 80 81 122 128 129
+    LogicExpression <object_val> (97)
+        於左側： 84
+        於右側： 83
+    OrExpression <object_val> (98)
+        於左側： 85 86
+        於右側： 84 85
+    AndExpression <object_val> (99)
+        於左側： 87 88
+        於右側： 85 86 87
+    BitOrExpression <object_val> (100)
+        於左側： 89 90
+        於右側： 87 88 89
+    BitXorExpression <object_val> (101)
+        於左側： 91 92
+        於右側： 89 90 91
+    BitAndExpression <object_val> (102)
+        於左側： 93 94
+        於右側： 91 92 93
+    EqualExpression <object_val> (103)
+        於左側： 95 96 97
+        於右側： 93 94 95 96
+    CompareExpression <object_val> (104)
+        於左側： 98 99 100 101 102
+        於右側： 95 96 97 98 99 100 101
+    ShiftExpression <object_val> (105)
+        於左側： 103 104
+        於右側： 98 99 100 101 102 103
+    AddOPExpression <object_val> (106)
+        於左側： 105 106 107
+        於右側： 103 104 105 106
+    MulOPExpression <object_val> (107)
+        於左側： 108 109 110 111
+        於右側： 105 106 107 108 109 110
+    CastExpression <object_val> (108)
+        於左側： 112 113
+        於右側： 108 109 110 111
+    UnsignNumberExpression <object_val> (109)
+        於左側： 114 115 116
+        於右側： 112 113 114 115
+    LogicNotExpression <object_val> (110)
+        於左側： 117 118 119 120
+        於右側： 116 117 118
+    CallFunction <object_val> (111)
+        於左側： 121
+        於右側： 78 119
+    PrimaryExpression <object_val> (112)
+        於左側： 122 123 124 125 126
+        於右側： 120
+    IdentExpression <object_val> (113)
+        於左側： 127 128 129
+        於右側： 29 30 31 32 33 34 35 36 37 38 39 40 41 124
+    NumberExpression <object_val> (114)
+        於左側： 130 131
+        於右側： 69 70 126
+    BoolExpression <object_val> (115)
+        於左側： 132
+        於右側： 125
+
+
+狀態 0
+
+    0 $accept: • Program $end
+
+    $end      使用規則 3 以縮減 (Program)
+    $default  使用規則 1 以縮減 ($@1)
+
+    Program  進入狀態 1
+    $@1      進入狀態 2
+
+
+狀態 1
+
+    0 $accept: Program • $end
+
+    $end  偏移，並進入狀態 3
+
+
+狀態 2
+
+    2 Program: $@1 • GlobalStmtList
+
+    VARIABLE_T  偏移，並進入狀態 4
+
+    GlobalStmtList      進入狀態 5
+    GlobalStmt          進入狀態 6
+    DefineVariableStmt  進入狀態 7
+    FunctionDefStmt     進入狀態 8
+
+
+狀態 3
+
+    0 $accept: Program $end •
+
+    $default  接受
+
+
+狀態 4
+
+    8 DefineVariableStmt: VARIABLE_T • IDENT VAL_ASSIGN Expression ';'
+   10 FunctionDefStmt: VARIABLE_T • IDENT $@2 '(' FunctionParameterStmtList ')' '{' StmtList '}'
+   12                | VARIABLE_T • IDENT '[' ']' $@3 '(' FunctionParameterStmtList ')' '{' StmtList '}'
+
+    IDENT  偏移，並進入狀態 9
+
+
+狀態 5
+
+    2 Program: $@1 GlobalStmtList •
+    4 GlobalStmtList: GlobalStmtList • GlobalStmt
+
+    VARIABLE_T  偏移，並進入狀態 4
+
+    $default  使用規則 2 以縮減 (Program)
+
+    GlobalStmt          進入狀態 10
+    DefineVariableStmt  進入狀態 7
+    FunctionDefStmt     進入狀態 8
+
+
+狀態 6
+
+    5 GlobalStmtList: GlobalStmt •
+
+    $default  使用規則 5 以縮減 (GlobalStmtList)
+
+
+狀態 7
+
+    6 GlobalStmt: DefineVariableStmt •
+
+    $default  使用規則 6 以縮減 (GlobalStmt)
+
+
+狀態 8
+
+    7 GlobalStmt: FunctionDefStmt •
+
+    $default  使用規則 7 以縮減 (GlobalStmt)
+
+
+狀態 9
+
+    8 DefineVariableStmt: VARIABLE_T IDENT • VAL_ASSIGN Expression ';'
+   10 FunctionDefStmt: VARIABLE_T IDENT • $@2 '(' FunctionParameterStmtList ')' '{' StmtList '}'
+   12                | VARIABLE_T IDENT • '[' ']' $@3 '(' FunctionParameterStmtList ')' '{' StmtList '}'
+
+    VAL_ASSIGN  偏移，並進入狀態 11
+    '['         偏移，並進入狀態 12
+
+    $default  使用規則 9 以縮減 ($@2)
+
+    $@2  進入狀態 13
+
+
+狀態 10
+
+    4 GlobalStmtList: GlobalStmtList GlobalStmt •
+
+    $default  使用規則 4 以縮減 (GlobalStmtList)
+
+
+狀態 11
+
+    8 DefineVariableStmt: VARIABLE_T IDENT VAL_ASSIGN • Expression ';'
+
+    BAN        偏移，並進入狀態 14
+    BNT        偏移，並進入狀態 15
+    SUB        偏移，並進入狀態 16
+    NOT        偏移，並進入狀態 17
+    '('        偏移，並進入狀態 18
+    BOOL_LIT   偏移，並進入狀態 19
+    INT_LIT    偏移，並進入狀態 20
+    FLOAT_LIT  偏移，並進入狀態 21
+    STR_LIT    偏移，並進入狀態 22
+    IDENT      偏移，並進入狀態 23
+
+    Expression              進入狀態 24
+    LogicExpression         進入狀態 25
+    OrExpression            進入狀態 26
+    AndExpression           進入狀態 27
+    BitOrExpression         進入狀態 28
+    BitXorExpression        進入狀態 29
+    BitAndExpression        進入狀態 30
+    EqualExpression         進入狀態 31
+    CompareExpression       進入狀態 32
+    ShiftExpression         進入狀態 33
+    AddOPExpression         進入狀態 34
+    MulOPExpression         進入狀態 35
+    CastExpression          進入狀態 36
+    UnsignNumberExpression  進入狀態 37
+    LogicNotExpression      進入狀態 38
+    CallFunction            進入狀態 39
+    PrimaryExpression       進入狀態 40
+    IdentExpression         進入狀態 41
+    NumberExpression        進入狀態 42
+    BoolExpression          進入狀態 43
+
+
+狀態 12
+
+   12 FunctionDefStmt: VARIABLE_T IDENT '[' • ']' $@3 '(' FunctionParameterStmtList ')' '{' StmtList '}'
+
+    ']'  偏移，並進入狀態 44
+
+
+狀態 13
+
+   10 FunctionDefStmt: VARIABLE_T IDENT $@2 • '(' FunctionParameterStmtList ')' '{' StmtList '}'
+
+    '('  偏移，並進入狀態 45
+
+
+狀態 14
+
+  118 LogicNotExpression: BAN • LogicNotExpression
+
+    BAN        偏移，並進入狀態 14
+    BNT        偏移，並進入狀態 15
+    '('        偏移，並進入狀態 46
+    BOOL_LIT   偏移，並進入狀態 19
+    INT_LIT    偏移，並進入狀態 20
+    FLOAT_LIT  偏移，並進入狀態 21
+    STR_LIT    偏移，並進入狀態 22
+    IDENT      偏移，並進入狀態 23
+
+    LogicNotExpression  進入狀態 47
+    CallFunction        進入狀態 39
+    PrimaryExpression   進入狀態 40
+    IdentExpression     進入狀態 41
+    NumberExpression    進入狀態 42
+    BoolExpression      進入狀態 43
+
+
+狀態 15
+
+  117 LogicNotExpression: BNT • LogicNotExpression
+
+    BAN        偏移，並進入狀態 14
+    BNT        偏移，並進入狀態 15
+    '('        偏移，並進入狀態 46
+    BOOL_LIT   偏移，並進入狀態 19
+    INT_LIT    偏移，並進入狀態 20
+    FLOAT_LIT  偏移，並進入狀態 21
+    STR_LIT    偏移，並進入狀態 22
+    IDENT      偏移，並進入狀態 23
+
+    LogicNotExpression  進入狀態 48
+    CallFunction        進入狀態 39
+    PrimaryExpression   進入狀態 40
+    IdentExpression     進入狀態 41
+    NumberExpression    進入狀態 42
+    BoolExpression      進入狀態 43
+
+
+狀態 16
+
+  114 UnsignNumberExpression: SUB • UnsignNumberExpression
+
+    BAN        偏移，並進入狀態 14
+    BNT        偏移，並進入狀態 15
+    SUB        偏移，並進入狀態 16
+    NOT        偏移，並進入狀態 17
+    '('        偏移，並進入狀態 46
+    BOOL_LIT   偏移，並進入狀態 19
+    INT_LIT    偏移，並進入狀態 20
+    FLOAT_LIT  偏移，並進入狀態 21
+    STR_LIT    偏移，並進入狀態 22
+    IDENT      偏移，並進入狀態 23
+
+    UnsignNumberExpression  進入狀態 49
+    LogicNotExpression      進入狀態 38
+    CallFunction            進入狀態 39
+    PrimaryExpression       進入狀態 40
+    IdentExpression         進入狀態 41
+    NumberExpression        進入狀態 42
+    BoolExpression          進入狀態 43
+
+
+狀態 17
+
+  115 UnsignNumberExpression: NOT • UnsignNumberExpression
+
+    BAN        偏移，並進入狀態 14
+    BNT        偏移，並進入狀態 15
+    SUB        偏移，並進入狀態 16
+    NOT        偏移，並進入狀態 17
+    '('        偏移，並進入狀態 46
+    BOOL_LIT   偏移，並進入狀態 19
+    INT_LIT    偏移，並進入狀態 20
+    FLOAT_LIT  偏移，並進入狀態 21
+    STR_LIT    偏移，並進入狀態 22
+    IDENT      偏移，並進入狀態 23
+
+    UnsignNumberExpression  進入狀態 50
+    LogicNotExpression      進入狀態 38
+    CallFunction            進入狀態 39
+    PrimaryExpression       進入狀態 40
+    IdentExpression         進入狀態 41
+    NumberExpression        進入狀態 42
+    BoolExpression          進入狀態 43
+
+
+狀態 18
+
+  112 CastExpression: '(' • VARIABLE_T ')' UnsignNumberExpression
+  122 PrimaryExpression: '(' • Expression ')'
+
+    BAN         偏移，並進入狀態 14
+    BNT         偏移，並進入狀態 15
+    SUB         偏移，並進入狀態 16
+    NOT         偏移，並進入狀態 17
+    '('         偏移，並進入狀態 18
+    VARIABLE_T  偏移，並進入狀態 51
+    BOOL_LIT    偏移，並進入狀態 19
+    INT_LIT     偏移，並進入狀態 20
+    FLOAT_LIT   偏移，並進入狀態 21
+    STR_LIT     偏移，並進入狀態 22
+    IDENT       偏移，並進入狀態 23
+
+    Expression              進入狀態 52
+    LogicExpression         進入狀態 25
+    OrExpression            進入狀態 26
+    AndExpression           進入狀態 27
+    BitOrExpression         進入狀態 28
+    BitXorExpression        進入狀態 29
+    BitAndExpression        進入狀態 30
+    EqualExpression         進入狀態 31
+    CompareExpression       進入狀態 32
+    ShiftExpression         進入狀態 33
+    AddOPExpression         進入狀態 34
+    MulOPExpression         進入狀態 35
+    CastExpression          進入狀態 36
+    UnsignNumberExpression  進入狀態 37
+    LogicNotExpression      進入狀態 38
+    CallFunction            進入狀態 39
+    PrimaryExpression       進入狀態 40
+    IdentExpression         進入狀態 41
+    NumberExpression        進入狀態 42
+    BoolExpression          進入狀態 43
+
+
+狀態 19
+
+  132 BoolExpression: BOOL_LIT •
+
+    $default  使用規則 132 以縮減 (BoolExpression)
+
+
+狀態 20
+
+  130 NumberExpression: INT_LIT •
+
+    $default  使用規則 130 以縮減 (NumberExpression)
+
+
+狀態 21
+
+  131 NumberExpression: FLOAT_LIT •
+
+    $default  使用規則 131 以縮減 (NumberExpression)
+
+
+狀態 22
+
+  123 PrimaryExpression: STR_LIT •
+
+    $default  使用規則 123 以縮減 (PrimaryExpression)
+
+
+狀態 23
+
+  121 CallFunction: IDENT • '(' FunctionList ')'
+  127 IdentExpression: IDENT •
+  128                | IDENT • '[' Expression ']'
+  129                | IDENT • '[' Expression ']' '[' Expression ']'
+
+    '('  偏移，並進入狀態 53
+    '['  偏移，並進入狀態 54
+
+    $default  使用規則 127 以縮減 (IdentExpression)
+
+
+狀態 24
+
+    8 DefineVariableStmt: VARIABLE_T IDENT VAL_ASSIGN Expression • ';'
+
+    ';'  偏移，並進入狀態 55
+
+
+狀態 25
+
+   83 Expression: LogicExpression •
+
+    $default  使用規則 83 以縮減 (Expression)
+
+
+狀態 26
+
+   84 LogicExpression: OrExpression •
+   85 OrExpression: OrExpression • LOR AndExpression
+
+    LOR  偏移，並進入狀態 56
+
+    $default  使用規則 84 以縮減 (LogicExpression)
+
+
+狀態 27
+
+   86 OrExpression: AndExpression •
+   87 AndExpression: AndExpression • LAN BitOrExpression
+
+    LAN  偏移，並進入狀態 57
+
+    $default  使用規則 86 以縮減 (OrExpression)
+
+
+狀態 28
+
+   88 AndExpression: BitOrExpression •
+   89 BitOrExpression: BitOrExpression • BOR BitXorExpression
+
+    BOR  偏移，並進入狀態 58
+
+    $default  使用規則 88 以縮減 (AndExpression)
+
+
+狀態 29
+
+   90 BitOrExpression: BitXorExpression •
+   91 BitXorExpression: BitXorExpression • BXO BitAndExpression
+
+    BXO  偏移，並進入狀態 59
+
+    $default  使用規則 90 以縮減 (BitOrExpression)
+
+
+狀態 30
+
+   92 BitXorExpression: BitAndExpression •
+   93 BitAndExpression: BitAndExpression • BAN EqualExpression
+
+    BAN  偏移，並進入狀態 60
+
+    $default  使用規則 92 以縮減 (BitXorExpression)
+
+
+狀態 31
+
+   94 BitAndExpression: EqualExpression •
+   95 EqualExpression: EqualExpression • NEQ CompareExpression
+   96                | EqualExpression • EQL CompareExpression
+
+    EQL  偏移，並進入狀態 61
+    NEQ  偏移，並進入狀態 62
+
+    $default  使用規則 94 以縮減 (BitAndExpression)
+
+
+狀態 32
+
+   97 EqualExpression: CompareExpression •
+   98 CompareExpression: CompareExpression • GTR ShiftExpression
+   99                  | CompareExpression • LES ShiftExpression
+  100                  | CompareExpression • GEQ ShiftExpression
+  101                  | CompareExpression • LEQ ShiftExpression
+
+    GTR  偏移，並進入狀態 63
+    LES  偏移，並進入狀態 64
+    GEQ  偏移，並進入狀態 65
+    LEQ  偏移，並進入狀態 66
+
+    $default  使用規則 97 以縮減 (EqualExpression)
+
+
+狀態 33
+
+  102 CompareExpression: ShiftExpression •
+  103 ShiftExpression: ShiftExpression • SHR AddOPExpression
+
+    SHR  偏移，並進入狀態 67
+
+    $default  使用規則 102 以縮減 (CompareExpression)
+
+
+狀態 34
+
+  104 ShiftExpression: AddOPExpression •
+  105 AddOPExpression: AddOPExpression • ADD MulOPExpression
+  106                | AddOPExpression • SUB MulOPExpression
+
+    ADD  偏移，並進入狀態 68
+    SUB  偏移，並進入狀態 69
+
+    $default  使用規則 104 以縮減 (ShiftExpression)
+
+
+狀態 35
+
+  107 AddOPExpression: MulOPExpression •
+  108 MulOPExpression: MulOPExpression • MUL CastExpression
+  109                | MulOPExpression • DIV CastExpression
+  110                | MulOPExpression • REM CastExpression
+
+    MUL  偏移，並進入狀態 70
+    DIV  偏移，並進入狀態 71
+    REM  偏移，並進入狀態 72
+
+    $default  使用規則 107 以縮減 (AddOPExpression)
+
+
+狀態 36
+
+  111 MulOPExpression: CastExpression •
+
+    $default  使用規則 111 以縮減 (MulOPExpression)
+
+
+狀態 37
+
+  113 CastExpression: UnsignNumberExpression •
+
+    $default  使用規則 113 以縮減 (CastExpression)
+
+
+狀態 38
+
+  116 UnsignNumberExpression: LogicNotExpression •
+
+    $default  使用規則 116 以縮減 (UnsignNumberExpression)
+
+
+狀態 39
+
+  119 LogicNotExpression: CallFunction •
+
+    $default  使用規則 119 以縮減 (LogicNotExpression)
+
+
+狀態 40
+
+  120 LogicNotExpression: PrimaryExpression •
+
+    $default  使用規則 120 以縮減 (LogicNotExpression)
+
+
+狀態 41
+
+  124 PrimaryExpression: IdentExpression •
+
+    $default  使用規則 124 以縮減 (PrimaryExpression)
+
+
+狀態 42
+
+  126 PrimaryExpression: NumberExpression •
+
+    $default  使用規則 126 以縮減 (PrimaryExpression)
+
+
+狀態 43
+
+  125 PrimaryExpression: BoolExpression •
+
+    $default  使用規則 125 以縮減 (PrimaryExpression)
+
+
+狀態 44
+
+   12 FunctionDefStmt: VARIABLE_T IDENT '[' ']' • $@3 '(' FunctionParameterStmtList ')' '{' StmtList '}'
+
+    $default  使用規則 11 以縮減 ($@3)
+
+    $@3  進入狀態 73
+
+
+狀態 45
+
+   10 FunctionDefStmt: VARIABLE_T IDENT $@2 '(' • FunctionParameterStmtList ')' '{' StmtList '}'
+
+    VARIABLE_T  偏移，並進入狀態 74
+
+    $default  使用規則 15 以縮減 (FunctionParameterStmtList)
+
+    FunctionParameterStmtList  進入狀態 75
+    FunctionParameterStmt      進入狀態 76
+
+
+狀態 46
+
+  122 PrimaryExpression: '(' • Expression ')'
+
+    BAN        偏移，並進入狀態 14
+    BNT        偏移，並進入狀態 15
+    SUB        偏移，並進入狀態 16
+    NOT        偏移，並進入狀態 17
+    '('        偏移，並進入狀態 18
+    BOOL_LIT   偏移，並進入狀態 19
+    INT_LIT    偏移，並進入狀態 20
+    FLOAT_LIT  偏移，並進入狀態 21
+    STR_LIT    偏移，並進入狀態 22
+    IDENT      偏移，並進入狀態 23
+
+    Expression              進入狀態 52
+    LogicExpression         進入狀態 25
+    OrExpression            進入狀態 26
+    AndExpression           進入狀態 27
+    BitOrExpression         進入狀態 28
+    BitXorExpression        進入狀態 29
+    BitAndExpression        進入狀態 30
+    EqualExpression         進入狀態 31
+    CompareExpression       進入狀態 32
+    ShiftExpression         進入狀態 33
+    AddOPExpression         進入狀態 34
+    MulOPExpression         進入狀態 35
+    CastExpression          進入狀態 36
+    UnsignNumberExpression  進入狀態 37
+    LogicNotExpression      進入狀態 38
+    CallFunction            進入狀態 39
+    PrimaryExpression       進入狀態 40
+    IdentExpression         進入狀態 41
+    NumberExpression        進入狀態 42
+    BoolExpression          進入狀態 43
+
+
+狀態 47
+
+  118 LogicNotExpression: BAN LogicNotExpression •
+
+    $default  使用規則 118 以縮減 (LogicNotExpression)
+
+
+狀態 48
+
+  117 LogicNotExpression: BNT LogicNotExpression •
+
+    $default  使用規則 117 以縮減 (LogicNotExpression)
+
+
+狀態 49
+
+  114 UnsignNumberExpression: SUB UnsignNumberExpression •
+
+    $default  使用規則 114 以縮減 (UnsignNumberExpression)
+
+
+狀態 50
+
+  115 UnsignNumberExpression: NOT UnsignNumberExpression •
+
+    $default  使用規則 115 以縮減 (UnsignNumberExpression)
+
+
+狀態 51
+
+  112 CastExpression: '(' VARIABLE_T • ')' UnsignNumberExpression
+
+    ')'  偏移，並進入狀態 77
+
+
+狀態 52
+
+  122 PrimaryExpression: '(' Expression • ')'
+
+    ')'  偏移，並進入狀態 78
+
+
+狀態 53
+
+  121 CallFunction: IDENT '(' • FunctionList ')'
+
+    BAN        偏移，並進入狀態 14
+    BNT        偏移，並進入狀態 15
+    SUB        偏移，並進入狀態 16
+    NOT        偏移，並進入狀態 17
+    '('        偏移，並進入狀態 18
+    BOOL_LIT   偏移，並進入狀態 19
+    INT_LIT    偏移，並進入狀態 20
+    FLOAT_LIT  偏移，並進入狀態 21
+    STR_LIT    偏移，並進入狀態 22
+    IDENT      偏移，並進入狀態 23
+
+    $default  使用規則 20 以縮減 (FunctionList)
+
+    FunctionList            進入狀態 79
+    Expression              進入狀態 80
+    LogicExpression         進入狀態 25
+    OrExpression            進入狀態 26
+    AndExpression           進入狀態 27
+    BitOrExpression         進入狀態 28
+    BitXorExpression        進入狀態 29
+    BitAndExpression        進入狀態 30
+    EqualExpression         進入狀態 31
+    CompareExpression       進入狀態 32
+    ShiftExpression         進入狀態 33
+    AddOPExpression         進入狀態 34
+    MulOPExpression         進入狀態 35
+    CastExpression          進入狀態 36
+    UnsignNumberExpression  進入狀態 37
+    LogicNotExpression      進入狀態 38
+    CallFunction            進入狀態 39
+    PrimaryExpression       進入狀態 40
+    IdentExpression         進入狀態 41
+    NumberExpression        進入狀態 42
+    BoolExpression          進入狀態 43
+
+
+狀態 54
+
+  128 IdentExpression: IDENT '[' • Expression ']'
+  129                | IDENT '[' • Expression ']' '[' Expression ']'
+
+    BAN        偏移，並進入狀態 14
+    BNT        偏移，並進入狀態 15
+    SUB        偏移，並進入狀態 16
+    NOT        偏移，並進入狀態 17
+    '('        偏移，並進入狀態 18
+    BOOL_LIT   偏移，並進入狀態 19
+    INT_LIT    偏移，並進入狀態 20
+    FLOAT_LIT  偏移，並進入狀態 21
+    STR_LIT    偏移，並進入狀態 22
+    IDENT      偏移，並進入狀態 23
+
+    Expression              進入狀態 81
+    LogicExpression         進入狀態 25
+    OrExpression            進入狀態 26
+    AndExpression           進入狀態 27
+    BitOrExpression         進入狀態 28
+    BitXorExpression        進入狀態 29
+    BitAndExpression        進入狀態 30
+    EqualExpression         進入狀態 31
+    CompareExpression       進入狀態 32
+    ShiftExpression         進入狀態 33
+    AddOPExpression         進入狀態 34
+    MulOPExpression         進入狀態 35
+    CastExpression          進入狀態 36
+    UnsignNumberExpression  進入狀態 37
+    LogicNotExpression      進入狀態 38
+    CallFunction            進入狀態 39
+    PrimaryExpression       進入狀態 40
+    IdentExpression         進入狀態 41
+    NumberExpression        進入狀態 42
+    BoolExpression          進入狀態 43
+
+
+狀態 55
+
+    8 DefineVariableStmt: VARIABLE_T IDENT VAL_ASSIGN Expression ';' •
+
+    $default  使用規則 8 以縮減 (DefineVariableStmt)
+
+
+狀態 56
+
+   85 OrExpression: OrExpression LOR • AndExpression
+
+    BAN        偏移，並進入狀態 14
+    BNT        偏移，並進入狀態 15
+    SUB        偏移，並進入狀態 16
+    NOT        偏移，並進入狀態 17
+    '('        偏移，並進入狀態 18
+    BOOL_LIT   偏移，並進入狀態 19
+    INT_LIT    偏移，並進入狀態 20
+    FLOAT_LIT  偏移，並進入狀態 21
+    STR_LIT    偏移，並進入狀態 22
+    IDENT      偏移，並進入狀態 23
+
+    AndExpression           進入狀態 82
+    BitOrExpression         進入狀態 28
+    BitXorExpression        進入狀態 29
+    BitAndExpression        進入狀態 30
+    EqualExpression         進入狀態 31
+    CompareExpression       進入狀態 32
+    ShiftExpression         進入狀態 33
+    AddOPExpression         進入狀態 34
+    MulOPExpression         進入狀態 35
+    CastExpression          進入狀態 36
+    UnsignNumberExpression  進入狀態 37
+    LogicNotExpression      進入狀態 38
+    CallFunction            進入狀態 39
+    PrimaryExpression       進入狀態 40
+    IdentExpression         進入狀態 41
+    NumberExpression        進入狀態 42
+    BoolExpression          進入狀態 43
+
+
+狀態 57
+
+   87 AndExpression: AndExpression LAN • BitOrExpression
+
+    BAN        偏移，並進入狀態 14
+    BNT        偏移，並進入狀態 15
+    SUB        偏移，並進入狀態 16
+    NOT        偏移，並進入狀態 17
+    '('        偏移，並進入狀態 18
+    BOOL_LIT   偏移，並進入狀態 19
+    INT_LIT    偏移，並進入狀態 20
+    FLOAT_LIT  偏移，並進入狀態 21
+    STR_LIT    偏移，並進入狀態 22
+    IDENT      偏移，並進入狀態 23
+
+    BitOrExpression         進入狀態 83
+    BitXorExpression        進入狀態 29
+    BitAndExpression        進入狀態 30
+    EqualExpression         進入狀態 31
+    CompareExpression       進入狀態 32
+    ShiftExpression         進入狀態 33
+    AddOPExpression         進入狀態 34
+    MulOPExpression         進入狀態 35
+    CastExpression          進入狀態 36
+    UnsignNumberExpression  進入狀態 37
+    LogicNotExpression      進入狀態 38
+    CallFunction            進入狀態 39
+    PrimaryExpression       進入狀態 40
+    IdentExpression         進入狀態 41
+    NumberExpression        進入狀態 42
+    BoolExpression          進入狀態 43
+
+
+狀態 58
+
+   89 BitOrExpression: BitOrExpression BOR • BitXorExpression
+
+    BAN        偏移，並進入狀態 14
+    BNT        偏移，並進入狀態 15
+    SUB        偏移，並進入狀態 16
+    NOT        偏移，並進入狀態 17
+    '('        偏移，並進入狀態 18
+    BOOL_LIT   偏移，並進入狀態 19
+    INT_LIT    偏移，並進入狀態 20
+    FLOAT_LIT  偏移，並進入狀態 21
+    STR_LIT    偏移，並進入狀態 22
+    IDENT      偏移，並進入狀態 23
+
+    BitXorExpression        進入狀態 84
+    BitAndExpression        進入狀態 30
+    EqualExpression         進入狀態 31
+    CompareExpression       進入狀態 32
+    ShiftExpression         進入狀態 33
+    AddOPExpression         進入狀態 34
+    MulOPExpression         進入狀態 35
+    CastExpression          進入狀態 36
+    UnsignNumberExpression  進入狀態 37
+    LogicNotExpression      進入狀態 38
+    CallFunction            進入狀態 39
+    PrimaryExpression       進入狀態 40
+    IdentExpression         進入狀態 41
+    NumberExpression        進入狀態 42
+    BoolExpression          進入狀態 43
+
+
+狀態 59
+
+   91 BitXorExpression: BitXorExpression BXO • BitAndExpression
+
+    BAN        偏移，並進入狀態 14
+    BNT        偏移，並進入狀態 15
+    SUB        偏移，並進入狀態 16
+    NOT        偏移，並進入狀態 17
+    '('        偏移，並進入狀態 18
+    BOOL_LIT   偏移，並進入狀態 19
+    INT_LIT    偏移，並進入狀態 20
+    FLOAT_LIT  偏移，並進入狀態 21
+    STR_LIT    偏移，並進入狀態 22
+    IDENT      偏移，並進入狀態 23
+
+    BitAndExpression        進入狀態 85
+    EqualExpression         進入狀態 31
+    CompareExpression       進入狀態 32
+    ShiftExpression         進入狀態 33
+    AddOPExpression         進入狀態 34
+    MulOPExpression         進入狀態 35
+    CastExpression          進入狀態 36
+    UnsignNumberExpression  進入狀態 37
+    LogicNotExpression      進入狀態 38
+    CallFunction            進入狀態 39
+    PrimaryExpression       進入狀態 40
+    IdentExpression         進入狀態 41
+    NumberExpression        進入狀態 42
+    BoolExpression          進入狀態 43
+
+
+狀態 60
+
+   93 BitAndExpression: BitAndExpression BAN • EqualExpression
+
+    BAN        偏移，並進入狀態 14
+    BNT        偏移，並進入狀態 15
+    SUB        偏移，並進入狀態 16
+    NOT        偏移，並進入狀態 17
+    '('        偏移，並進入狀態 18
+    BOOL_LIT   偏移，並進入狀態 19
+    INT_LIT    偏移，並進入狀態 20
+    FLOAT_LIT  偏移，並進入狀態 21
+    STR_LIT    偏移，並進入狀態 22
+    IDENT      偏移，並進入狀態 23
+
+    EqualExpression         進入狀態 86
+    CompareExpression       進入狀態 32
+    ShiftExpression         進入狀態 33
+    AddOPExpression         進入狀態 34
+    MulOPExpression         進入狀態 35
+    CastExpression          進入狀態 36
+    UnsignNumberExpression  進入狀態 37
+    LogicNotExpression      進入狀態 38
+    CallFunction            進入狀態 39
+    PrimaryExpression       進入狀態 40
+    IdentExpression         進入狀態 41
+    NumberExpression        進入狀態 42
+    BoolExpression          進入狀態 43
+
+
+狀態 61
+
+   96 EqualExpression: EqualExpression EQL • CompareExpression
+
+    BAN        偏移，並進入狀態 14
+    BNT        偏移，並進入狀態 15
+    SUB        偏移，並進入狀態 16
+    NOT        偏移，並進入狀態 17
+    '('        偏移，並進入狀態 18
+    BOOL_LIT   偏移，並進入狀態 19
+    INT_LIT    偏移，並進入狀態 20
+    FLOAT_LIT  偏移，並進入狀態 21
+    STR_LIT    偏移，並進入狀態 22
+    IDENT      偏移，並進入狀態 23
+
+    CompareExpression       進入狀態 87
+    ShiftExpression         進入狀態 33
+    AddOPExpression         進入狀態 34
+    MulOPExpression         進入狀態 35
+    CastExpression          進入狀態 36
+    UnsignNumberExpression  進入狀態 37
+    LogicNotExpression      進入狀態 38
+    CallFunction            進入狀態 39
+    PrimaryExpression       進入狀態 40
+    IdentExpression         進入狀態 41
+    NumberExpression        進入狀態 42
+    BoolExpression          進入狀態 43
+
+
+狀態 62
+
+   95 EqualExpression: EqualExpression NEQ • CompareExpression
+
+    BAN        偏移，並進入狀態 14
+    BNT        偏移，並進入狀態 15
+    SUB        偏移，並進入狀態 16
+    NOT        偏移，並進入狀態 17
+    '('        偏移，並進入狀態 18
+    BOOL_LIT   偏移，並進入狀態 19
+    INT_LIT    偏移，並進入狀態 20
+    FLOAT_LIT  偏移，並進入狀態 21
+    STR_LIT    偏移，並進入狀態 22
+    IDENT      偏移，並進入狀態 23
+
+    CompareExpression       進入狀態 88
+    ShiftExpression         進入狀態 33
+    AddOPExpression         進入狀態 34
+    MulOPExpression         進入狀態 35
+    CastExpression          進入狀態 36
+    UnsignNumberExpression  進入狀態 37
+    LogicNotExpression      進入狀態 38
+    CallFunction            進入狀態 39
+    PrimaryExpression       進入狀態 40
+    IdentExpression         進入狀態 41
+    NumberExpression        進入狀態 42
+    BoolExpression          進入狀態 43
+
+
+狀態 63
+
+   98 CompareExpression: CompareExpression GTR • ShiftExpression
+
+    BAN        偏移，並進入狀態 14
+    BNT        偏移，並進入狀態 15
+    SUB        偏移，並進入狀態 16
+    NOT        偏移，並進入狀態 17
+    '('        偏移，並進入狀態 18
+    BOOL_LIT   偏移，並進入狀態 19
+    INT_LIT    偏移，並進入狀態 20
+    FLOAT_LIT  偏移，並進入狀態 21
+    STR_LIT    偏移，並進入狀態 22
+    IDENT      偏移，並進入狀態 23
+
+    ShiftExpression         進入狀態 89
+    AddOPExpression         進入狀態 34
+    MulOPExpression         進入狀態 35
+    CastExpression          進入狀態 36
+    UnsignNumberExpression  進入狀態 37
+    LogicNotExpression      進入狀態 38
+    CallFunction            進入狀態 39
+    PrimaryExpression       進入狀態 40
+    IdentExpression         進入狀態 41
+    NumberExpression        進入狀態 42
+    BoolExpression          進入狀態 43
+
+
+狀態 64
+
+   99 CompareExpression: CompareExpression LES • ShiftExpression
+
+    BAN        偏移，並進入狀態 14
+    BNT        偏移，並進入狀態 15
+    SUB        偏移，並進入狀態 16
+    NOT        偏移，並進入狀態 17
+    '('        偏移，並進入狀態 18
+    BOOL_LIT   偏移，並進入狀態 19
+    INT_LIT    偏移，並進入狀態 20
+    FLOAT_LIT  偏移，並進入狀態 21
+    STR_LIT    偏移，並進入狀態 22
+    IDENT      偏移，並進入狀態 23
+
+    ShiftExpression         進入狀態 90
+    AddOPExpression         進入狀態 34
+    MulOPExpression         進入狀態 35
+    CastExpression          進入狀態 36
+    UnsignNumberExpression  進入狀態 37
+    LogicNotExpression      進入狀態 38
+    CallFunction            進入狀態 39
+    PrimaryExpression       進入狀態 40
+    IdentExpression         進入狀態 41
+    NumberExpression        進入狀態 42
+    BoolExpression          進入狀態 43
+
+
+狀態 65
+
+  100 CompareExpression: CompareExpression GEQ • ShiftExpression
+
+    BAN        偏移，並進入狀態 14
+    BNT        偏移，並進入狀態 15
+    SUB        偏移，並進入狀態 16
+    NOT        偏移，並進入狀態 17
+    '('        偏移，並進入狀態 18
+    BOOL_LIT   偏移，並進入狀態 19
+    INT_LIT    偏移，並進入狀態 20
+    FLOAT_LIT  偏移，並進入狀態 21
+    STR_LIT    偏移，並進入狀態 22
+    IDENT      偏移，並進入狀態 23
+
+    ShiftExpression         進入狀態 91
+    AddOPExpression         進入狀態 34
+    MulOPExpression         進入狀態 35
+    CastExpression          進入狀態 36
+    UnsignNumberExpression  進入狀態 37
+    LogicNotExpression      進入狀態 38
+    CallFunction            進入狀態 39
+    PrimaryExpression       進入狀態 40
+    IdentExpression         進入狀態 41
+    NumberExpression        進入狀態 42
+    BoolExpression          進入狀態 43
+
+
+狀態 66
+
+  101 CompareExpression: CompareExpression LEQ • ShiftExpression
+
+    BAN        偏移，並進入狀態 14
+    BNT        偏移，並進入狀態 15
+    SUB        偏移，並進入狀態 16
+    NOT        偏移，並進入狀態 17
+    '('        偏移，並進入狀態 18
+    BOOL_LIT   偏移，並進入狀態 19
+    INT_LIT    偏移，並進入狀態 20
+    FLOAT_LIT  偏移，並進入狀態 21
+    STR_LIT    偏移，並進入狀態 22
+    IDENT      偏移，並進入狀態 23
+
+    ShiftExpression         進入狀態 92
+    AddOPExpression         進入狀態 34
+    MulOPExpression         進入狀態 35
+    CastExpression          進入狀態 36
+    UnsignNumberExpression  進入狀態 37
+    LogicNotExpression      進入狀態 38
+    CallFunction            進入狀態 39
+    PrimaryExpression       進入狀態 40
+    IdentExpression         進入狀態 41
+    NumberExpression        進入狀態 42
+    BoolExpression          進入狀態 43
+
+
+狀態 67
+
+  103 ShiftExpression: ShiftExpression SHR • AddOPExpression
+
+    BAN        偏移，並進入狀態 14
+    BNT        偏移，並進入狀態 15
+    SUB        偏移，並進入狀態 16
+    NOT        偏移，並進入狀態 17
+    '('        偏移，並進入狀態 18
+    BOOL_LIT   偏移，並進入狀態 19
+    INT_LIT    偏移，並進入狀態 20
+    FLOAT_LIT  偏移，並進入狀態 21
+    STR_LIT    偏移，並進入狀態 22
+    IDENT      偏移，並進入狀態 23
+
+    AddOPExpression         進入狀態 93
+    MulOPExpression         進入狀態 35
+    CastExpression          進入狀態 36
+    UnsignNumberExpression  進入狀態 37
+    LogicNotExpression      進入狀態 38
+    CallFunction            進入狀態 39
+    PrimaryExpression       進入狀態 40
+    IdentExpression         進入狀態 41
+    NumberExpression        進入狀態 42
+    BoolExpression          進入狀態 43
+
+
+狀態 68
+
+  105 AddOPExpression: AddOPExpression ADD • MulOPExpression
+
+    BAN        偏移，並進入狀態 14
+    BNT        偏移，並進入狀態 15
+    SUB        偏移，並進入狀態 16
+    NOT        偏移，並進入狀態 17
+    '('        偏移，並進入狀態 18
+    BOOL_LIT   偏移，並進入狀態 19
+    INT_LIT    偏移，並進入狀態 20
+    FLOAT_LIT  偏移，並進入狀態 21
+    STR_LIT    偏移，並進入狀態 22
+    IDENT      偏移，並進入狀態 23
+
+    MulOPExpression         進入狀態 94
+    CastExpression          進入狀態 36
+    UnsignNumberExpression  進入狀態 37
+    LogicNotExpression      進入狀態 38
+    CallFunction            進入狀態 39
+    PrimaryExpression       進入狀態 40
+    IdentExpression         進入狀態 41
+    NumberExpression        進入狀態 42
+    BoolExpression          進入狀態 43
+
+
+狀態 69
+
+  106 AddOPExpression: AddOPExpression SUB • MulOPExpression
+
+    BAN        偏移，並進入狀態 14
+    BNT        偏移，並進入狀態 15
+    SUB        偏移，並進入狀態 16
+    NOT        偏移，並進入狀態 17
+    '('        偏移，並進入狀態 18
+    BOOL_LIT   偏移，並進入狀態 19
+    INT_LIT    偏移，並進入狀態 20
+    FLOAT_LIT  偏移，並進入狀態 21
+    STR_LIT    偏移，並進入狀態 22
+    IDENT      偏移，並進入狀態 23
+
+    MulOPExpression         進入狀態 95
+    CastExpression          進入狀態 36
+    UnsignNumberExpression  進入狀態 37
+    LogicNotExpression      進入狀態 38
+    CallFunction            進入狀態 39
+    PrimaryExpression       進入狀態 40
+    IdentExpression         進入狀態 41
+    NumberExpression        進入狀態 42
+    BoolExpression          進入狀態 43
+
+
+狀態 70
+
+  108 MulOPExpression: MulOPExpression MUL • CastExpression
+
+    BAN        偏移，並進入狀態 14
+    BNT        偏移，並進入狀態 15
+    SUB        偏移，並進入狀態 16
+    NOT        偏移，並進入狀態 17
+    '('        偏移，並進入狀態 18
+    BOOL_LIT   偏移，並進入狀態 19
+    INT_LIT    偏移，並進入狀態 20
+    FLOAT_LIT  偏移，並進入狀態 21
+    STR_LIT    偏移，並進入狀態 22
+    IDENT      偏移，並進入狀態 23
+
+    CastExpression          進入狀態 96
+    UnsignNumberExpression  進入狀態 37
+    LogicNotExpression      進入狀態 38
+    CallFunction            進入狀態 39
+    PrimaryExpression       進入狀態 40
+    IdentExpression         進入狀態 41
+    NumberExpression        進入狀態 42
+    BoolExpression          進入狀態 43
+
+
+狀態 71
+
+  109 MulOPExpression: MulOPExpression DIV • CastExpression
+
+    BAN        偏移，並進入狀態 14
+    BNT        偏移，並進入狀態 15
+    SUB        偏移，並進入狀態 16
+    NOT        偏移，並進入狀態 17
+    '('        偏移，並進入狀態 18
+    BOOL_LIT   偏移，並進入狀態 19
+    INT_LIT    偏移，並進入狀態 20
+    FLOAT_LIT  偏移，並進入狀態 21
+    STR_LIT    偏移，並進入狀態 22
+    IDENT      偏移，並進入狀態 23
+
+    CastExpression          進入狀態 97
+    UnsignNumberExpression  進入狀態 37
+    LogicNotExpression      進入狀態 38
+    CallFunction            進入狀態 39
+    PrimaryExpression       進入狀態 40
+    IdentExpression         進入狀態 41
+    NumberExpression        進入狀態 42
+    BoolExpression          進入狀態 43
+
+
+狀態 72
+
+  110 MulOPExpression: MulOPExpression REM • CastExpression
+
+    BAN        偏移，並進入狀態 14
+    BNT        偏移，並進入狀態 15
+    SUB        偏移，並進入狀態 16
+    NOT        偏移，並進入狀態 17
+    '('        偏移，並進入狀態 18
+    BOOL_LIT   偏移，並進入狀態 19
+    INT_LIT    偏移，並進入狀態 20
+    FLOAT_LIT  偏移，並進入狀態 21
+    STR_LIT    偏移，並進入狀態 22
+    IDENT      偏移，並進入狀態 23
+
+    CastExpression          進入狀態 98
+    UnsignNumberExpression  進入狀態 37
+    LogicNotExpression      進入狀態 38
+    CallFunction            進入狀態 39
+    PrimaryExpression       進入狀態 40
+    IdentExpression         進入狀態 41
+    NumberExpression        進入狀態 42
+    BoolExpression          進入狀態 43
+
+
+狀態 73
+
+   12 FunctionDefStmt: VARIABLE_T IDENT '[' ']' $@3 • '(' FunctionParameterStmtList ')' '{' StmtList '}'
+
+    '('  偏移，並進入狀態 99
+
+
+狀態 74
+
+   16 FunctionParameterStmt: VARIABLE_T • IDENT
+   17                      | VARIABLE_T • IDENT '[' ']'
+
+    IDENT  偏移，並進入狀態 100
+
+
+狀態 75
+
+   10 FunctionDefStmt: VARIABLE_T IDENT $@2 '(' FunctionParameterStmtList • ')' '{' StmtList '}'
+   13 FunctionParameterStmtList: FunctionParameterStmtList • ',' FunctionParameterStmt
+
+    ')'  偏移，並進入狀態 101
+    ','  偏移，並進入狀態 102
+
+
+狀態 76
+
+   14 FunctionParameterStmtList: FunctionParameterStmt •
+
+    $default  使用規則 14 以縮減 (FunctionParameterStmtList)
+
+
+狀態 77
+
+  112 CastExpression: '(' VARIABLE_T ')' • UnsignNumberExpression
+
+    BAN        偏移，並進入狀態 14
+    BNT        偏移，並進入狀態 15
+    SUB        偏移，並進入狀態 16
+    NOT        偏移，並進入狀態 17
+    '('        偏移，並進入狀態 46
+    BOOL_LIT   偏移，並進入狀態 19
+    INT_LIT    偏移，並進入狀態 20
+    FLOAT_LIT  偏移，並進入狀態 21
+    STR_LIT    偏移，並進入狀態 22
+    IDENT      偏移，並進入狀態 23
+
+    UnsignNumberExpression  進入狀態 103
+    LogicNotExpression      進入狀態 38
+    CallFunction            進入狀態 39
+    PrimaryExpression       進入狀態 40
+    IdentExpression         進入狀態 41
+    NumberExpression        進入狀態 42
+    BoolExpression          進入狀態 43
+
+
+狀態 78
+
+  122 PrimaryExpression: '(' Expression ')' •
+
+    $default  使用規則 122 以縮減 (PrimaryExpression)
+
+
+狀態 79
+
+   18 FunctionList: FunctionList • ',' Expression
+  121 CallFunction: IDENT '(' FunctionList • ')'
+
+    ')'  偏移，並進入狀態 104
+    ','  偏移，並進入狀態 105
+
+
+狀態 80
+
+   19 FunctionList: Expression •
+
+    $default  使用規則 19 以縮減 (FunctionList)
+
+
+狀態 81
+
+  128 IdentExpression: IDENT '[' Expression • ']'
+  129                | IDENT '[' Expression • ']' '[' Expression ']'
+
+    ']'  偏移，並進入狀態 106
+
+
+狀態 82
+
+   85 OrExpression: OrExpression LOR AndExpression •
+   87 AndExpression: AndExpression • LAN BitOrExpression
+
+    LAN  偏移，並進入狀態 57
+
+    $default  使用規則 85 以縮減 (OrExpression)
+
+
+狀態 83
+
+   87 AndExpression: AndExpression LAN BitOrExpression •
+   89 BitOrExpression: BitOrExpression • BOR BitXorExpression
+
+    BOR  偏移，並進入狀態 58
+
+    $default  使用規則 87 以縮減 (AndExpression)
+
+
+狀態 84
+
+   89 BitOrExpression: BitOrExpression BOR BitXorExpression •
+   91 BitXorExpression: BitXorExpression • BXO BitAndExpression
+
+    BXO  偏移，並進入狀態 59
+
+    $default  使用規則 89 以縮減 (BitOrExpression)
+
+
+狀態 85
+
+   91 BitXorExpression: BitXorExpression BXO BitAndExpression •
+   93 BitAndExpression: BitAndExpression • BAN EqualExpression
+
+    BAN  偏移，並進入狀態 60
+
+    $default  使用規則 91 以縮減 (BitXorExpression)
+
+
+狀態 86
+
+   93 BitAndExpression: BitAndExpression BAN EqualExpression •
+   95 EqualExpression: EqualExpression • NEQ CompareExpression
+   96                | EqualExpression • EQL CompareExpression
+
+    EQL  偏移，並進入狀態 61
+    NEQ  偏移，並進入狀態 62
+
+    $default  使用規則 93 以縮減 (BitAndExpression)
+
+
+狀態 87
+
+   96 EqualExpression: EqualExpression EQL CompareExpression •
+   98 CompareExpression: CompareExpression • GTR ShiftExpression
+   99                  | CompareExpression • LES ShiftExpression
+  100                  | CompareExpression • GEQ ShiftExpression
+  101                  | CompareExpression • LEQ ShiftExpression
+
+    GTR  偏移，並進入狀態 63
+    LES  偏移，並進入狀態 64
+    GEQ  偏移，並進入狀態 65
+    LEQ  偏移，並進入狀態 66
+
+    $default  使用規則 96 以縮減 (EqualExpression)
+
+
+狀態 88
+
+   95 EqualExpression: EqualExpression NEQ CompareExpression •
+   98 CompareExpression: CompareExpression • GTR ShiftExpression
+   99                  | CompareExpression • LES ShiftExpression
+  100                  | CompareExpression • GEQ ShiftExpression
+  101                  | CompareExpression • LEQ ShiftExpression
+
+    GTR  偏移，並進入狀態 63
+    LES  偏移，並進入狀態 64
+    GEQ  偏移，並進入狀態 65
+    LEQ  偏移，並進入狀態 66
+
+    $default  使用規則 95 以縮減 (EqualExpression)
+
+
+狀態 89
+
+   98 CompareExpression: CompareExpression GTR ShiftExpression •
+  103 ShiftExpression: ShiftExpression • SHR AddOPExpression
+
+    SHR  偏移，並進入狀態 67
+
+    $default  使用規則 98 以縮減 (CompareExpression)
+
+
+狀態 90
+
+   99 CompareExpression: CompareExpression LES ShiftExpression •
+  103 ShiftExpression: ShiftExpression • SHR AddOPExpression
+
+    SHR  偏移，並進入狀態 67
+
+    $default  使用規則 99 以縮減 (CompareExpression)
+
+
+狀態 91
+
+  100 CompareExpression: CompareExpression GEQ ShiftExpression •
+  103 ShiftExpression: ShiftExpression • SHR AddOPExpression
+
+    SHR  偏移，並進入狀態 67
+
+    $default  使用規則 100 以縮減 (CompareExpression)
+
+
+狀態 92
+
+  101 CompareExpression: CompareExpression LEQ ShiftExpression •
+  103 ShiftExpression: ShiftExpression • SHR AddOPExpression
+
+    SHR  偏移，並進入狀態 67
+
+    $default  使用規則 101 以縮減 (CompareExpression)
+
+
+狀態 93
+
+  103 ShiftExpression: ShiftExpression SHR AddOPExpression •
+  105 AddOPExpression: AddOPExpression • ADD MulOPExpression
+  106                | AddOPExpression • SUB MulOPExpression
+
+    ADD  偏移，並進入狀態 68
+    SUB  偏移，並進入狀態 69
+
+    $default  使用規則 103 以縮減 (ShiftExpression)
+
+
+狀態 94
+
+  105 AddOPExpression: AddOPExpression ADD MulOPExpression •
+  108 MulOPExpression: MulOPExpression • MUL CastExpression
+  109                | MulOPExpression • DIV CastExpression
+  110                | MulOPExpression • REM CastExpression
+
+    MUL  偏移，並進入狀態 70
+    DIV  偏移，並進入狀態 71
+    REM  偏移，並進入狀態 72
+
+    $default  使用規則 105 以縮減 (AddOPExpression)
+
+
+狀態 95
+
+  106 AddOPExpression: AddOPExpression SUB MulOPExpression •
+  108 MulOPExpression: MulOPExpression • MUL CastExpression
+  109                | MulOPExpression • DIV CastExpression
+  110                | MulOPExpression • REM CastExpression
+
+    MUL  偏移，並進入狀態 70
+    DIV  偏移，並進入狀態 71
+    REM  偏移，並進入狀態 72
+
+    $default  使用規則 106 以縮減 (AddOPExpression)
+
+
+狀態 96
+
+  108 MulOPExpression: MulOPExpression MUL CastExpression •
+
+    $default  使用規則 108 以縮減 (MulOPExpression)
+
+
+狀態 97
+
+  109 MulOPExpression: MulOPExpression DIV CastExpression •
+
+    $default  使用規則 109 以縮減 (MulOPExpression)
+
+
+狀態 98
+
+  110 MulOPExpression: MulOPExpression REM CastExpression •
+
+    $default  使用規則 110 以縮減 (MulOPExpression)
+
+
+狀態 99
+
+   12 FunctionDefStmt: VARIABLE_T IDENT '[' ']' $@3 '(' • FunctionParameterStmtList ')' '{' StmtList '}'
+
+    VARIABLE_T  偏移，並進入狀態 74
+
+    $default  使用規則 15 以縮減 (FunctionParameterStmtList)
+
+    FunctionParameterStmtList  進入狀態 107
+    FunctionParameterStmt      進入狀態 76
+
+
+狀態 100
+
+   16 FunctionParameterStmt: VARIABLE_T IDENT •
+   17                      | VARIABLE_T IDENT • '[' ']'
+
+    '['  偏移，並進入狀態 108
+
+    $default  使用規則 16 以縮減 (FunctionParameterStmt)
+
+
+狀態 101
+
+   10 FunctionDefStmt: VARIABLE_T IDENT $@2 '(' FunctionParameterStmtList ')' • '{' StmtList '}'
+
+    '{'  偏移，並進入狀態 109
+
+
+狀態 102
+
+   13 FunctionParameterStmtList: FunctionParameterStmtList ',' • FunctionParameterStmt
+
+    VARIABLE_T  偏移，並進入狀態 74
+
+    FunctionParameterStmt  進入狀態 110
+
+
+狀態 103
+
+  112 CastExpression: '(' VARIABLE_T ')' UnsignNumberExpression •
+
+    $default  使用規則 112 以縮減 (CastExpression)
+
+
+狀態 104
+
+  121 CallFunction: IDENT '(' FunctionList ')' •
+
+    $default  使用規則 121 以縮減 (CallFunction)
+
+
+狀態 105
+
+   18 FunctionList: FunctionList ',' • Expression
+
+    BAN        偏移，並進入狀態 14
+    BNT        偏移，並進入狀態 15
+    SUB        偏移，並進入狀態 16
+    NOT        偏移，並進入狀態 17
+    '('        偏移，並進入狀態 18
+    BOOL_LIT   偏移，並進入狀態 19
+    INT_LIT    偏移，並進入狀態 20
+    FLOAT_LIT  偏移，並進入狀態 21
+    STR_LIT    偏移，並進入狀態 22
+    IDENT      偏移，並進入狀態 23
+
+    Expression              進入狀態 111
+    LogicExpression         進入狀態 25
+    OrExpression            進入狀態 26
+    AndExpression           進入狀態 27
+    BitOrExpression         進入狀態 28
+    BitXorExpression        進入狀態 29
+    BitAndExpression        進入狀態 30
+    EqualExpression         進入狀態 31
+    CompareExpression       進入狀態 32
+    ShiftExpression         進入狀態 33
+    AddOPExpression         進入狀態 34
+    MulOPExpression         進入狀態 35
+    CastExpression          進入狀態 36
+    UnsignNumberExpression  進入狀態 37
+    LogicNotExpression      進入狀態 38
+    CallFunction            進入狀態 39
+    PrimaryExpression       進入狀態 40
+    IdentExpression         進入狀態 41
+    NumberExpression        進入狀態 42
+    BoolExpression          進入狀態 43
+
+
+狀態 106
+
+  128 IdentExpression: IDENT '[' Expression ']' •
+  129                | IDENT '[' Expression ']' • '[' Expression ']'
+
+    '['  偏移，並進入狀態 112
+
+    $default  使用規則 128 以縮減 (IdentExpression)
+
+
+狀態 107
+
+   12 FunctionDefStmt: VARIABLE_T IDENT '[' ']' $@3 '(' FunctionParameterStmtList • ')' '{' StmtList '}'
+   13 FunctionParameterStmtList: FunctionParameterStmtList • ',' FunctionParameterStmt
+
+    ')'  偏移，並進入狀態 113
+    ','  偏移，並進入狀態 102
+
+
+狀態 108
+
+   17 FunctionParameterStmt: VARIABLE_T IDENT '[' • ']'
+
+    ']'  偏移，並進入狀態 114
+
+
+狀態 109
+
+   10 FunctionDefStmt: VARIABLE_T IDENT $@2 '(' FunctionParameterStmtList ')' '{' • StmtList '}'
+
+    COUT        偏移，並進入狀態 115
+    IF          偏移，並進入狀態 116
+    FOR         偏移，並進入狀態 117
+    WHILE       偏移，並進入狀態 118
+    RETURN      偏移，並進入狀態 119
+    BREAK       偏移，並進入狀態 120
+    CONTINUE    偏移，並進入狀態 121
+    ';'         偏移，並進入狀態 122
+    VARIABLE_T  偏移，並進入狀態 123
+    IDENT       偏移，並進入狀態 23
+
+    StmtList         進入狀態 124
+    FunctionStmt     進入狀態 125
+    AssignmentStmt   進入狀態 126
+    IfStmt           進入狀態 127
+    LoopStmt         進入狀態 128
+    WhileStmt        進入狀態 129
+    ForStmt          進入狀態 130
+    DefineStmt       進入狀態 131
+    Stmt             進入狀態 132
+    ReturnCondition  進入狀態 133
+    CallFunction     進入狀態 134
+    IdentExpression  進入狀態 135
+
+
+狀態 110
+
+   13 FunctionParameterStmtList: FunctionParameterStmtList ',' FunctionParameterStmt •
+
+    $default  使用規則 13 以縮減 (FunctionParameterStmtList)
+
+
+狀態 111
+
+   18 FunctionList: FunctionList ',' Expression •
+
+    $default  使用規則 18 以縮減 (FunctionList)
+
+
+狀態 112
+
+  129 IdentExpression: IDENT '[' Expression ']' '[' • Expression ']'
+
+    BAN        偏移，並進入狀態 14
+    BNT        偏移，並進入狀態 15
+    SUB        偏移，並進入狀態 16
+    NOT        偏移，並進入狀態 17
+    '('        偏移，並進入狀態 18
+    BOOL_LIT   偏移，並進入狀態 19
+    INT_LIT    偏移，並進入狀態 20
+    FLOAT_LIT  偏移，並進入狀態 21
+    STR_LIT    偏移，並進入狀態 22
+    IDENT      偏移，並進入狀態 23
+
+    Expression              進入狀態 136
+    LogicExpression         進入狀態 25
+    OrExpression            進入狀態 26
+    AndExpression           進入狀態 27
+    BitOrExpression         進入狀態 28
+    BitXorExpression        進入狀態 29
+    BitAndExpression        進入狀態 30
+    EqualExpression         進入狀態 31
+    CompareExpression       進入狀態 32
+    ShiftExpression         進入狀態 33
+    AddOPExpression         進入狀態 34
+    MulOPExpression         進入狀態 35
+    CastExpression          進入狀態 36
+    UnsignNumberExpression  進入狀態 37
+    LogicNotExpression      進入狀態 38
+    CallFunction            進入狀態 39
+    PrimaryExpression       進入狀態 40
+    IdentExpression         進入狀態 41
+    NumberExpression        進入狀態 42
+    BoolExpression          進入狀態 43
+
+
+狀態 113
+
+   12 FunctionDefStmt: VARIABLE_T IDENT '[' ']' $@3 '(' FunctionParameterStmtList ')' • '{' StmtList '}'
+
+    '{'  偏移，並進入狀態 137
+
+
+狀態 114
+
+   17 FunctionParameterStmt: VARIABLE_T IDENT '[' ']' •
+
+    $default  使用規則 17 以縮減 (FunctionParameterStmt)
+
+
+狀態 115
+
+   74 Stmt: COUT • CoutParmListStmt ';'
+
+    SHL  偏移，並進入狀態 138
+
+    CoutParmListStmt  進入狀態 139
+
+
+狀態 116
+
+   44 IfStmt: IF • '(' Expression ')' $@4 '{' StmtList '}' $@5 ElseStmt
+   46       | IF • '(' Expression ')' $@6 FunctionStmt
+
+    '('  偏移，並進入狀態 140
+
+
+狀態 117
+
+   56 ForStmt: FOR • $@10 '(' ForDefine ')' '{' StmtList '}'
+
+    $default  使用規則 55 以縮減 ($@10)
+
+    $@10  進入狀態 141
+
+
+狀態 118
+
+   54 WhileStmt: WHILE • $@8 '(' Expression ')' $@9 '{' StmtList '}'
+
+    $default  使用規則 52 以縮減 ($@8)
+
+    $@8  進入狀態 142
+
+
+狀態 119
+
+   81 ReturnCondition: RETURN • Expression ';'
+   82                | RETURN • ';'
+
+    BAN        偏移，並進入狀態 14
+    BNT        偏移，並進入狀態 15
+    SUB        偏移，並進入狀態 16
+    NOT        偏移，並進入狀態 17
+    '('        偏移，並進入狀態 18
+    ';'        偏移，並進入狀態 143
+    BOOL_LIT   偏移，並進入狀態 19
+    INT_LIT    偏移，並進入狀態 20
+    FLOAT_LIT  偏移，並進入狀態 21
+    STR_LIT    偏移，並進入狀態 22
+    IDENT      偏移，並進入狀態 23
+
+    Expression              進入狀態 144
+    LogicExpression         進入狀態 25
+    OrExpression            進入狀態 26
+    AndExpression           進入狀態 27
+    BitOrExpression         進入狀態 28
+    BitXorExpression        進入狀態 29
+    BitAndExpression        進入狀態 30
+    EqualExpression         進入狀態 31
+    CompareExpression       進入狀態 32
+    ShiftExpression         進入狀態 33
+    AddOPExpression         進入狀態 34
+    MulOPExpression         進入狀態 35
+    CastExpression          進入狀態 36
+    UnsignNumberExpression  進入狀態 37
+    LogicNotExpression      進入狀態 38
+    CallFunction            進入狀態 39
+    PrimaryExpression       進入狀態 40
+    IdentExpression         進入狀態 41
+    NumberExpression        進入狀態 42
+    BoolExpression          進入狀態 43
+
+
+狀態 120
+
+   76 Stmt: BREAK • ';'
+
+    ';'  偏移，並進入狀態 145
+
+
+狀態 121
+
+   77 Stmt: CONTINUE • ';'
+
+    ';'  偏移，並進入狀態 146
+
+
+狀態 122
+
+   23 FunctionStmt: ';' •
+
+    $default  使用規則 23 以縮減 (FunctionStmt)
+
+
+狀態 123
+
+   64 DefineStmt: VARIABLE_T • DefineVariables
+
+    IDENT  偏移，並進入狀態 147
+
+    DefineVariables  進入狀態 148
+    Variable         進入狀態 149
+
+
+狀態 124
+
+   10 FunctionDefStmt: VARIABLE_T IDENT $@2 '(' FunctionParameterStmtList ')' '{' StmtList • '}'
+   21 StmtList: StmtList • FunctionStmt
+
+    COUT        偏移，並進入狀態 115
+    IF          偏移，並進入狀態 116
+    FOR         偏移，並進入狀態 117
+    WHILE       偏移，並進入狀態 118
+    RETURN      偏移，並進入狀態 119
+    BREAK       偏移，並進入狀態 120
+    CONTINUE    偏移，並進入狀態 121
+    '}'         偏移，並進入狀態 150
+    ';'         偏移，並進入狀態 122
+    VARIABLE_T  偏移，並進入狀態 123
+    IDENT       偏移，並進入狀態 23
+
+    FunctionStmt     進入狀態 151
+    AssignmentStmt   進入狀態 126
+    IfStmt           進入狀態 127
+    LoopStmt         進入狀態 128
+    WhileStmt        進入狀態 129
+    ForStmt          進入狀態 130
+    DefineStmt       進入狀態 131
+    Stmt             進入狀態 132
+    ReturnCondition  進入狀態 133
+    CallFunction     進入狀態 134
+    IdentExpression  進入狀態 135
+
+
+狀態 125
+
+   22 StmtList: FunctionStmt •
+
+    $default  使用規則 22 以縮減 (StmtList)
+
+
+狀態 126
+
+   25 FunctionStmt: AssignmentStmt • ';'
+
+    ';'  偏移，並進入狀態 152
+
+
+狀態 127
+
+   27 FunctionStmt: IfStmt •
+
+    $default  使用規則 27 以縮減 (FunctionStmt)
+
+
+狀態 128
+
+   28 FunctionStmt: LoopStmt •
+
+    $default  使用規則 28 以縮減 (FunctionStmt)
+
+
+狀態 129
+
+   50 LoopStmt: WhileStmt •
+
+    $default  使用規則 50 以縮減 (LoopStmt)
+
+
+狀態 130
+
+   51 LoopStmt: ForStmt •
+
+    $default  使用規則 51 以縮減 (LoopStmt)
+
+
+狀態 131
+
+   26 FunctionStmt: DefineStmt • ';'
+
+    ';'  偏移，並進入狀態 153
+
+
+狀態 132
+
+   24 FunctionStmt: Stmt •
+
+    $default  使用規則 24 以縮減 (FunctionStmt)
+
+
+狀態 133
+
+   75 Stmt: ReturnCondition •
+
+    $default  使用規則 75 以縮減 (Stmt)
+
+
+狀態 134
+
+   78 Stmt: CallFunction •
+
+    $default  使用規則 78 以縮減 (Stmt)
+
+
+狀態 135
+
+   29 AssignmentStmt: IdentExpression • VAL_ASSIGN Expression
+   30               | IdentExpression • ADD_ASSIGN Expression
+   31               | IdentExpression • SUB_ASSIGN Expression
+   32               | IdentExpression • MUL_ASSIGN Expression
+   33               | IdentExpression • DIV_ASSIGN Expression
+   34               | IdentExpression • REM_ASSIGN Expression
+   35               | IdentExpression • SHR_ASSIGN Expression
+   36               | IdentExpression • SHL_ASSIGN Expression
+   37               | IdentExpression • BAN_ASSIGN Expression
+   38               | IdentExpression • BOR_ASSIGN Expression
+   39               | IdentExpression • BXO_ASSIGN Expression
+   40               | IdentExpression • INC_ASSIGN
+   41               | IdentExpression • DEC_ASSIGN
+
+    VAL_ASSIGN  偏移，並進入狀態 154
+    ADD_ASSIGN  偏移，並進入狀態 155
+    SUB_ASSIGN  偏移，並進入狀態 156
+    MUL_ASSIGN  偏移，並進入狀態 157
+    DIV_ASSIGN  偏移，並進入狀態 158
+    REM_ASSIGN  偏移，並進入狀態 159
+    BAN_ASSIGN  偏移，並進入狀態 160
+    BOR_ASSIGN  偏移，並進入狀態 161
+    BXO_ASSIGN  偏移，並進入狀態 162
+    SHR_ASSIGN  偏移，並進入狀態 163
+    SHL_ASSIGN  偏移，並進入狀態 164
+    INC_ASSIGN  偏移，並進入狀態 165
+    DEC_ASSIGN  偏移，並進入狀態 166
+
+
+狀態 136
+
+  129 IdentExpression: IDENT '[' Expression ']' '[' Expression • ']'
+
+    ']'  偏移，並進入狀態 167
+
+
+狀態 137
+
+   12 FunctionDefStmt: VARIABLE_T IDENT '[' ']' $@3 '(' FunctionParameterStmtList ')' '{' • StmtList '}'
+
+    COUT        偏移，並進入狀態 115
+    IF          偏移，並進入狀態 116
+    FOR         偏移，並進入狀態 117
+    WHILE       偏移，並進入狀態 118
+    RETURN      偏移，並進入狀態 119
+    BREAK       偏移，並進入狀態 120
+    CONTINUE    偏移，並進入狀態 121
+    ';'         偏移，並進入狀態 122
+    VARIABLE_T  偏移，並進入狀態 123
+    IDENT       偏移，並進入狀態 23
+
+    StmtList         進入狀態 168
+    FunctionStmt     進入狀態 125
+    AssignmentStmt   進入狀態 126
+    IfStmt           進入狀態 127
+    LoopStmt         進入狀態 128
+    WhileStmt        進入狀態 129
+    ForStmt          進入狀態 130
+    DefineStmt       進入狀態 131
+    Stmt             進入狀態 132
+    ReturnCondition  進入狀態 133
+    CallFunction     進入狀態 134
+    IdentExpression  進入狀態 135
+
+
+狀態 138
+
+   80 CoutParmListStmt: SHL • Expression
+
+    BAN        偏移，並進入狀態 14
+    BNT        偏移，並進入狀態 15
+    SUB        偏移，並進入狀態 16
+    NOT        偏移，並進入狀態 17
+    '('        偏移，並進入狀態 18
+    BOOL_LIT   偏移，並進入狀態 19
+    INT_LIT    偏移，並進入狀態 20
+    FLOAT_LIT  偏移，並進入狀態 21
+    STR_LIT    偏移，並進入狀態 22
+    IDENT      偏移，並進入狀態 23
+
+    Expression              進入狀態 169
+    LogicExpression         進入狀態 25
+    OrExpression            進入狀態 26
+    AndExpression           進入狀態 27
+    BitOrExpression         進入狀態 28
+    BitXorExpression        進入狀態 29
+    BitAndExpression        進入狀態 30
+    EqualExpression         進入狀態 31
+    CompareExpression       進入狀態 32
+    ShiftExpression         進入狀態 33
+    AddOPExpression         進入狀態 34
+    MulOPExpression         進入狀態 35
+    CastExpression          進入狀態 36
+    UnsignNumberExpression  進入狀態 37
+    LogicNotExpression      進入狀態 38
+    CallFunction            進入狀態 39
+    PrimaryExpression       進入狀態 40
+    IdentExpression         進入狀態 41
+    NumberExpression        進入狀態 42
+    BoolExpression          進入狀態 43
+
+
+狀態 139
+
+   74 Stmt: COUT CoutParmListStmt • ';'
+   79 CoutParmListStmt: CoutParmListStmt • SHL Expression
+
+    SHL  偏移，並進入狀態 170
+    ';'  偏移，並進入狀態 171
+
+
+狀態 140
+
+   44 IfStmt: IF '(' • Expression ')' $@4 '{' StmtList '}' $@5 ElseStmt
+   46       | IF '(' • Expression ')' $@6 FunctionStmt
+
+    BAN        偏移，並進入狀態 14
+    BNT        偏移，並進入狀態 15
+    SUB        偏移，並進入狀態 16
+    NOT        偏移，並進入狀態 17
+    '('        偏移，並進入狀態 18
+    BOOL_LIT   偏移，並進入狀態 19
+    INT_LIT    偏移，並進入狀態 20
+    FLOAT_LIT  偏移，並進入狀態 21
+    STR_LIT    偏移，並進入狀態 22
+    IDENT      偏移，並進入狀態 23
+
+    Expression              進入狀態 172
+    LogicExpression         進入狀態 25
+    OrExpression            進入狀態 26
+    AndExpression           進入狀態 27
+    BitOrExpression         進入狀態 28
+    BitXorExpression        進入狀態 29
+    BitAndExpression        進入狀態 30
+    EqualExpression         進入狀態 31
+    CompareExpression       進入狀態 32
+    ShiftExpression         進入狀態 33
+    AddOPExpression         進入狀態 34
+    MulOPExpression         進入狀態 35
+    CastExpression          進入狀態 36
+    UnsignNumberExpression  進入狀態 37
+    LogicNotExpression      進入狀態 38
+    CallFunction            進入狀態 39
+    PrimaryExpression       進入狀態 40
+    IdentExpression         進入狀態 41
+    NumberExpression        進入狀態 42
+    BoolExpression          進入狀態 43
+
+
+狀態 141
+
+   56 ForStmt: FOR $@10 • '(' ForDefine ')' '{' StmtList '}'
+
+    '('  偏移，並進入狀態 173
+
+
+狀態 142
+
+   54 WhileStmt: WHILE $@8 • '(' Expression ')' $@9 '{' StmtList '}'
+
+    '('  偏移，並進入狀態 174
+
+
+狀態 143
+
+   82 ReturnCondition: RETURN ';' •
+
+    $default  使用規則 82 以縮減 (ReturnCondition)
+
+
+狀態 144
+
+   81 ReturnCondition: RETURN Expression • ';'
+
+    ';'  偏移，並進入狀態 175
+
+
+狀態 145
+
+   76 Stmt: BREAK ';' •
+
+    $default  使用規則 76 以縮減 (Stmt)
+
+
+狀態 146
+
+   77 Stmt: CONTINUE ';' •
+
+    $default  使用規則 77 以縮減 (Stmt)
+
+
+狀態 147
+
+   67 Variable: IDENT •
+   68         | IDENT • VAL_ASSIGN Expression
+   69         | IDENT • '[' NumberExpression ']' '[' NumberExpression ']'
+   70         | IDENT • '[' NumberExpression ']' VAL_ASSIGN '{' ArrayList '}'
+
+    VAL_ASSIGN  偏移，並進入狀態 176
+    '['         偏移，並進入狀態 177
+
+    $default  使用規則 67 以縮減 (Variable)
+
+
+狀態 148
+
+   64 DefineStmt: VARIABLE_T DefineVariables •
+   65 DefineVariables: DefineVariables • ',' Variable
+
+    ','  偏移，並進入狀態 178
+
+    $default  使用規則 64 以縮減 (DefineStmt)
+
+
+狀態 149
+
+   66 DefineVariables: Variable •
+
+    $default  使用規則 66 以縮減 (DefineVariables)
+
+
+狀態 150
+
+   10 FunctionDefStmt: VARIABLE_T IDENT $@2 '(' FunctionParameterStmtList ')' '{' StmtList '}' •
+
+    $default  使用規則 10 以縮減 (FunctionDefStmt)
+
+
+狀態 151
+
+   21 StmtList: StmtList FunctionStmt •
+
+    $default  使用規則 21 以縮減 (StmtList)
+
+
+狀態 152
+
+   25 FunctionStmt: AssignmentStmt ';' •
+
+    $default  使用規則 25 以縮減 (FunctionStmt)
+
+
+狀態 153
+
+   26 FunctionStmt: DefineStmt ';' •
+
+    $default  使用規則 26 以縮減 (FunctionStmt)
+
+
+狀態 154
+
+   29 AssignmentStmt: IdentExpression VAL_ASSIGN • Expression
+
+    BAN        偏移，並進入狀態 14
+    BNT        偏移，並進入狀態 15
+    SUB        偏移，並進入狀態 16
+    NOT        偏移，並進入狀態 17
+    '('        偏移，並進入狀態 18
+    BOOL_LIT   偏移，並進入狀態 19
+    INT_LIT    偏移，並進入狀態 20
+    FLOAT_LIT  偏移，並進入狀態 21
+    STR_LIT    偏移，並進入狀態 22
+    IDENT      偏移，並進入狀態 23
+
+    Expression              進入狀態 179
+    LogicExpression         進入狀態 25
+    OrExpression            進入狀態 26
+    AndExpression           進入狀態 27
+    BitOrExpression         進入狀態 28
+    BitXorExpression        進入狀態 29
+    BitAndExpression        進入狀態 30
+    EqualExpression         進入狀態 31
+    CompareExpression       進入狀態 32
+    ShiftExpression         進入狀態 33
+    AddOPExpression         進入狀態 34
+    MulOPExpression         進入狀態 35
+    CastExpression          進入狀態 36
+    UnsignNumberExpression  進入狀態 37
+    LogicNotExpression      進入狀態 38
+    CallFunction            進入狀態 39
+    PrimaryExpression       進入狀態 40
+    IdentExpression         進入狀態 41
+    NumberExpression        進入狀態 42
+    BoolExpression          進入狀態 43
+
+
+狀態 155
+
+   30 AssignmentStmt: IdentExpression ADD_ASSIGN • Expression
+
+    BAN        偏移，並進入狀態 14
+    BNT        偏移，並進入狀態 15
+    SUB        偏移，並進入狀態 16
+    NOT        偏移，並進入狀態 17
+    '('        偏移，並進入狀態 18
+    BOOL_LIT   偏移，並進入狀態 19
+    INT_LIT    偏移，並進入狀態 20
+    FLOAT_LIT  偏移，並進入狀態 21
+    STR_LIT    偏移，並進入狀態 22
+    IDENT      偏移，並進入狀態 23
+
+    Expression              進入狀態 180
+    LogicExpression         進入狀態 25
+    OrExpression            進入狀態 26
+    AndExpression           進入狀態 27
+    BitOrExpression         進入狀態 28
+    BitXorExpression        進入狀態 29
+    BitAndExpression        進入狀態 30
+    EqualExpression         進入狀態 31
+    CompareExpression       進入狀態 32
+    ShiftExpression         進入狀態 33
+    AddOPExpression         進入狀態 34
+    MulOPExpression         進入狀態 35
+    CastExpression          進入狀態 36
+    UnsignNumberExpression  進入狀態 37
+    LogicNotExpression      進入狀態 38
+    CallFunction            進入狀態 39
+    PrimaryExpression       進入狀態 40
+    IdentExpression         進入狀態 41
+    NumberExpression        進入狀態 42
+    BoolExpression          進入狀態 43
+
+
+狀態 156
+
+   31 AssignmentStmt: IdentExpression SUB_ASSIGN • Expression
+
+    BAN        偏移，並進入狀態 14
+    BNT        偏移，並進入狀態 15
+    SUB        偏移，並進入狀態 16
+    NOT        偏移，並進入狀態 17
+    '('        偏移，並進入狀態 18
+    BOOL_LIT   偏移，並進入狀態 19
+    INT_LIT    偏移，並進入狀態 20
+    FLOAT_LIT  偏移，並進入狀態 21
+    STR_LIT    偏移，並進入狀態 22
+    IDENT      偏移，並進入狀態 23
+
+    Expression              進入狀態 181
+    LogicExpression         進入狀態 25
+    OrExpression            進入狀態 26
+    AndExpression           進入狀態 27
+    BitOrExpression         進入狀態 28
+    BitXorExpression        進入狀態 29
+    BitAndExpression        進入狀態 30
+    EqualExpression         進入狀態 31
+    CompareExpression       進入狀態 32
+    ShiftExpression         進入狀態 33
+    AddOPExpression         進入狀態 34
+    MulOPExpression         進入狀態 35
+    CastExpression          進入狀態 36
+    UnsignNumberExpression  進入狀態 37
+    LogicNotExpression      進入狀態 38
+    CallFunction            進入狀態 39
+    PrimaryExpression       進入狀態 40
+    IdentExpression         進入狀態 41
+    NumberExpression        進入狀態 42
+    BoolExpression          進入狀態 43
+
+
+狀態 157
+
+   32 AssignmentStmt: IdentExpression MUL_ASSIGN • Expression
+
+    BAN        偏移，並進入狀態 14
+    BNT        偏移，並進入狀態 15
+    SUB        偏移，並進入狀態 16
+    NOT        偏移，並進入狀態 17
+    '('        偏移，並進入狀態 18
+    BOOL_LIT   偏移，並進入狀態 19
+    INT_LIT    偏移，並進入狀態 20
+    FLOAT_LIT  偏移，並進入狀態 21
+    STR_LIT    偏移，並進入狀態 22
+    IDENT      偏移，並進入狀態 23
+
+    Expression              進入狀態 182
+    LogicExpression         進入狀態 25
+    OrExpression            進入狀態 26
+    AndExpression           進入狀態 27
+    BitOrExpression         進入狀態 28
+    BitXorExpression        進入狀態 29
+    BitAndExpression        進入狀態 30
+    EqualExpression         進入狀態 31
+    CompareExpression       進入狀態 32
+    ShiftExpression         進入狀態 33
+    AddOPExpression         進入狀態 34
+    MulOPExpression         進入狀態 35
+    CastExpression          進入狀態 36
+    UnsignNumberExpression  進入狀態 37
+    LogicNotExpression      進入狀態 38
+    CallFunction            進入狀態 39
+    PrimaryExpression       進入狀態 40
+    IdentExpression         進入狀態 41
+    NumberExpression        進入狀態 42
+    BoolExpression          進入狀態 43
+
+
+狀態 158
+
+   33 AssignmentStmt: IdentExpression DIV_ASSIGN • Expression
+
+    BAN        偏移，並進入狀態 14
+    BNT        偏移，並進入狀態 15
+    SUB        偏移，並進入狀態 16
+    NOT        偏移，並進入狀態 17
+    '('        偏移，並進入狀態 18
+    BOOL_LIT   偏移，並進入狀態 19
+    INT_LIT    偏移，並進入狀態 20
+    FLOAT_LIT  偏移，並進入狀態 21
+    STR_LIT    偏移，並進入狀態 22
+    IDENT      偏移，並進入狀態 23
+
+    Expression              進入狀態 183
+    LogicExpression         進入狀態 25
+    OrExpression            進入狀態 26
+    AndExpression           進入狀態 27
+    BitOrExpression         進入狀態 28
+    BitXorExpression        進入狀態 29
+    BitAndExpression        進入狀態 30
+    EqualExpression         進入狀態 31
+    CompareExpression       進入狀態 32
+    ShiftExpression         進入狀態 33
+    AddOPExpression         進入狀態 34
+    MulOPExpression         進入狀態 35
+    CastExpression          進入狀態 36
+    UnsignNumberExpression  進入狀態 37
+    LogicNotExpression      進入狀態 38
+    CallFunction            進入狀態 39
+    PrimaryExpression       進入狀態 40
+    IdentExpression         進入狀態 41
+    NumberExpression        進入狀態 42
+    BoolExpression          進入狀態 43
+
+
+狀態 159
+
+   34 AssignmentStmt: IdentExpression REM_ASSIGN • Expression
+
+    BAN        偏移，並進入狀態 14
+    BNT        偏移，並進入狀態 15
+    SUB        偏移，並進入狀態 16
+    NOT        偏移，並進入狀態 17
+    '('        偏移，並進入狀態 18
+    BOOL_LIT   偏移，並進入狀態 19
+    INT_LIT    偏移，並進入狀態 20
+    FLOAT_LIT  偏移，並進入狀態 21
+    STR_LIT    偏移，並進入狀態 22
+    IDENT      偏移，並進入狀態 23
+
+    Expression              進入狀態 184
+    LogicExpression         進入狀態 25
+    OrExpression            進入狀態 26
+    AndExpression           進入狀態 27
+    BitOrExpression         進入狀態 28
+    BitXorExpression        進入狀態 29
+    BitAndExpression        進入狀態 30
+    EqualExpression         進入狀態 31
+    CompareExpression       進入狀態 32
+    ShiftExpression         進入狀態 33
+    AddOPExpression         進入狀態 34
+    MulOPExpression         進入狀態 35
+    CastExpression          進入狀態 36
+    UnsignNumberExpression  進入狀態 37
+    LogicNotExpression      進入狀態 38
+    CallFunction            進入狀態 39
+    PrimaryExpression       進入狀態 40
+    IdentExpression         進入狀態 41
+    NumberExpression        進入狀態 42
+    BoolExpression          進入狀態 43
+
+
+狀態 160
+
+   37 AssignmentStmt: IdentExpression BAN_ASSIGN • Expression
+
+    BAN        偏移，並進入狀態 14
+    BNT        偏移，並進入狀態 15
+    SUB        偏移，並進入狀態 16
+    NOT        偏移，並進入狀態 17
+    '('        偏移，並進入狀態 18
+    BOOL_LIT   偏移，並進入狀態 19
+    INT_LIT    偏移，並進入狀態 20
+    FLOAT_LIT  偏移，並進入狀態 21
+    STR_LIT    偏移，並進入狀態 22
+    IDENT      偏移，並進入狀態 23
+
+    Expression              進入狀態 185
+    LogicExpression         進入狀態 25
+    OrExpression            進入狀態 26
+    AndExpression           進入狀態 27
+    BitOrExpression         進入狀態 28
+    BitXorExpression        進入狀態 29
+    BitAndExpression        進入狀態 30
+    EqualExpression         進入狀態 31
+    CompareExpression       進入狀態 32
+    ShiftExpression         進入狀態 33
+    AddOPExpression         進入狀態 34
+    MulOPExpression         進入狀態 35
+    CastExpression          進入狀態 36
+    UnsignNumberExpression  進入狀態 37
+    LogicNotExpression      進入狀態 38
+    CallFunction            進入狀態 39
+    PrimaryExpression       進入狀態 40
+    IdentExpression         進入狀態 41
+    NumberExpression        進入狀態 42
+    BoolExpression          進入狀態 43
+
+
+狀態 161
+
+   38 AssignmentStmt: IdentExpression BOR_ASSIGN • Expression
+
+    BAN        偏移，並進入狀態 14
+    BNT        偏移，並進入狀態 15
+    SUB        偏移，並進入狀態 16
+    NOT        偏移，並進入狀態 17
+    '('        偏移，並進入狀態 18
+    BOOL_LIT   偏移，並進入狀態 19
+    INT_LIT    偏移，並進入狀態 20
+    FLOAT_LIT  偏移，並進入狀態 21
+    STR_LIT    偏移，並進入狀態 22
+    IDENT      偏移，並進入狀態 23
+
+    Expression              進入狀態 186
+    LogicExpression         進入狀態 25
+    OrExpression            進入狀態 26
+    AndExpression           進入狀態 27
+    BitOrExpression         進入狀態 28
+    BitXorExpression        進入狀態 29
+    BitAndExpression        進入狀態 30
+    EqualExpression         進入狀態 31
+    CompareExpression       進入狀態 32
+    ShiftExpression         進入狀態 33
+    AddOPExpression         進入狀態 34
+    MulOPExpression         進入狀態 35
+    CastExpression          進入狀態 36
+    UnsignNumberExpression  進入狀態 37
+    LogicNotExpression      進入狀態 38
+    CallFunction            進入狀態 39
+    PrimaryExpression       進入狀態 40
+    IdentExpression         進入狀態 41
+    NumberExpression        進入狀態 42
+    BoolExpression          進入狀態 43
+
+
+狀態 162
+
+   39 AssignmentStmt: IdentExpression BXO_ASSIGN • Expression
+
+    BAN        偏移，並進入狀態 14
+    BNT        偏移，並進入狀態 15
+    SUB        偏移，並進入狀態 16
+    NOT        偏移，並進入狀態 17
+    '('        偏移，並進入狀態 18
+    BOOL_LIT   偏移，並進入狀態 19
+    INT_LIT    偏移，並進入狀態 20
+    FLOAT_LIT  偏移，並進入狀態 21
+    STR_LIT    偏移，並進入狀態 22
+    IDENT      偏移，並進入狀態 23
+
+    Expression              進入狀態 187
+    LogicExpression         進入狀態 25
+    OrExpression            進入狀態 26
+    AndExpression           進入狀態 27
+    BitOrExpression         進入狀態 28
+    BitXorExpression        進入狀態 29
+    BitAndExpression        進入狀態 30
+    EqualExpression         進入狀態 31
+    CompareExpression       進入狀態 32
+    ShiftExpression         進入狀態 33
+    AddOPExpression         進入狀態 34
+    MulOPExpression         進入狀態 35
+    CastExpression          進入狀態 36
+    UnsignNumberExpression  進入狀態 37
+    LogicNotExpression      進入狀態 38
+    CallFunction            進入狀態 39
+    PrimaryExpression       進入狀態 40
+    IdentExpression         進入狀態 41
+    NumberExpression        進入狀態 42
+    BoolExpression          進入狀態 43
+
+
+狀態 163
+
+   35 AssignmentStmt: IdentExpression SHR_ASSIGN • Expression
+
+    BAN        偏移，並進入狀態 14
+    BNT        偏移，並進入狀態 15
+    SUB        偏移，並進入狀態 16
+    NOT        偏移，並進入狀態 17
+    '('        偏移，並進入狀態 18
+    BOOL_LIT   偏移，並進入狀態 19
+    INT_LIT    偏移，並進入狀態 20
+    FLOAT_LIT  偏移，並進入狀態 21
+    STR_LIT    偏移，並進入狀態 22
+    IDENT      偏移，並進入狀態 23
+
+    Expression              進入狀態 188
+    LogicExpression         進入狀態 25
+    OrExpression            進入狀態 26
+    AndExpression           進入狀態 27
+    BitOrExpression         進入狀態 28
+    BitXorExpression        進入狀態 29
+    BitAndExpression        進入狀態 30
+    EqualExpression         進入狀態 31
+    CompareExpression       進入狀態 32
+    ShiftExpression         進入狀態 33
+    AddOPExpression         進入狀態 34
+    MulOPExpression         進入狀態 35
+    CastExpression          進入狀態 36
+    UnsignNumberExpression  進入狀態 37
+    LogicNotExpression      進入狀態 38
+    CallFunction            進入狀態 39
+    PrimaryExpression       進入狀態 40
+    IdentExpression         進入狀態 41
+    NumberExpression        進入狀態 42
+    BoolExpression          進入狀態 43
+
+
+狀態 164
+
+   36 AssignmentStmt: IdentExpression SHL_ASSIGN • Expression
+
+    BAN        偏移，並進入狀態 14
+    BNT        偏移，並進入狀態 15
+    SUB        偏移，並進入狀態 16
+    NOT        偏移，並進入狀態 17
+    '('        偏移，並進入狀態 18
+    BOOL_LIT   偏移，並進入狀態 19
+    INT_LIT    偏移，並進入狀態 20
+    FLOAT_LIT  偏移，並進入狀態 21
+    STR_LIT    偏移，並進入狀態 22
+    IDENT      偏移，並進入狀態 23
+
+    Expression              進入狀態 189
+    LogicExpression         進入狀態 25
+    OrExpression            進入狀態 26
+    AndExpression           進入狀態 27
+    BitOrExpression         進入狀態 28
+    BitXorExpression        進入狀態 29
+    BitAndExpression        進入狀態 30
+    EqualExpression         進入狀態 31
+    CompareExpression       進入狀態 32
+    ShiftExpression         進入狀態 33
+    AddOPExpression         進入狀態 34
+    MulOPExpression         進入狀態 35
+    CastExpression          進入狀態 36
+    UnsignNumberExpression  進入狀態 37
+    LogicNotExpression      進入狀態 38
+    CallFunction            進入狀態 39
+    PrimaryExpression       進入狀態 40
+    IdentExpression         進入狀態 41
+    NumberExpression        進入狀態 42
+    BoolExpression          進入狀態 43
+
+
+狀態 165
+
+   40 AssignmentStmt: IdentExpression INC_ASSIGN •
+
+    $default  使用規則 40 以縮減 (AssignmentStmt)
+
+
+狀態 166
+
+   41 AssignmentStmt: IdentExpression DEC_ASSIGN •
+
+    $default  使用規則 41 以縮減 (AssignmentStmt)
+
+
+狀態 167
+
+  129 IdentExpression: IDENT '[' Expression ']' '[' Expression ']' •
+
+    $default  使用規則 129 以縮減 (IdentExpression)
+
+
+狀態 168
+
+   12 FunctionDefStmt: VARIABLE_T IDENT '[' ']' $@3 '(' FunctionParameterStmtList ')' '{' StmtList • '}'
+   21 StmtList: StmtList • FunctionStmt
+
+    COUT        偏移，並進入狀態 115
+    IF          偏移，並進入狀態 116
+    FOR         偏移，並進入狀態 117
+    WHILE       偏移，並進入狀態 118
+    RETURN      偏移，並進入狀態 119
+    BREAK       偏移，並進入狀態 120
+    CONTINUE    偏移，並進入狀態 121
+    '}'         偏移，並進入狀態 190
+    ';'         偏移，並進入狀態 122
+    VARIABLE_T  偏移，並進入狀態 123
+    IDENT       偏移，並進入狀態 23
+
+    FunctionStmt     進入狀態 151
+    AssignmentStmt   進入狀態 126
+    IfStmt           進入狀態 127
+    LoopStmt         進入狀態 128
+    WhileStmt        進入狀態 129
+    ForStmt          進入狀態 130
+    DefineStmt       進入狀態 131
+    Stmt             進入狀態 132
+    ReturnCondition  進入狀態 133
+    CallFunction     進入狀態 134
+    IdentExpression  進入狀態 135
+
+
+狀態 169
+
+   80 CoutParmListStmt: SHL Expression •
+
+    $default  使用規則 80 以縮減 (CoutParmListStmt)
+
+
+狀態 170
+
+   79 CoutParmListStmt: CoutParmListStmt SHL • Expression
+
+    BAN        偏移，並進入狀態 14
+    BNT        偏移，並進入狀態 15
+    SUB        偏移，並進入狀態 16
+    NOT        偏移，並進入狀態 17
+    '('        偏移，並進入狀態 18
+    BOOL_LIT   偏移，並進入狀態 19
+    INT_LIT    偏移，並進入狀態 20
+    FLOAT_LIT  偏移，並進入狀態 21
+    STR_LIT    偏移，並進入狀態 22
+    IDENT      偏移，並進入狀態 23
+
+    Expression              進入狀態 191
+    LogicExpression         進入狀態 25
+    OrExpression            進入狀態 26
+    AndExpression           進入狀態 27
+    BitOrExpression         進入狀態 28
+    BitXorExpression        進入狀態 29
+    BitAndExpression        進入狀態 30
+    EqualExpression         進入狀態 31
+    CompareExpression       進入狀態 32
+    ShiftExpression         進入狀態 33
+    AddOPExpression         進入狀態 34
+    MulOPExpression         進入狀態 35
+    CastExpression          進入狀態 36
+    UnsignNumberExpression  進入狀態 37
+    LogicNotExpression      進入狀態 38
+    CallFunction            進入狀態 39
+    PrimaryExpression       進入狀態 40
+    IdentExpression         進入狀態 41
+    NumberExpression        進入狀態 42
+    BoolExpression          進入狀態 43
+
+
+狀態 171
+
+   74 Stmt: COUT CoutParmListStmt ';' •
+
+    $default  使用規則 74 以縮減 (Stmt)
+
+
+狀態 172
+
+   44 IfStmt: IF '(' Expression • ')' $@4 '{' StmtList '}' $@5 ElseStmt
+   46       | IF '(' Expression • ')' $@6 FunctionStmt
+
+    ')'  偏移，並進入狀態 192
+
+
+狀態 173
+
+   56 ForStmt: FOR $@10 '(' • ForDefine ')' '{' StmtList '}'
+
+    VARIABLE_T  偏移，並進入狀態 123
+    IDENT       偏移，並進入狀態 193
+
+    $default  使用規則 61 以縮減 (InitDefine)
+
+    AssignmentStmt   進入狀態 194
+    ForDefine        進入狀態 195
+    InitDefine       進入狀態 196
+    DefineStmt       進入狀態 197
+    IdentExpression  進入狀態 135
+
+
+狀態 174
+
+   54 WhileStmt: WHILE $@8 '(' • Expression ')' $@9 '{' StmtList '}'
+
+    BAN        偏移，並進入狀態 14
+    BNT        偏移，並進入狀態 15
+    SUB        偏移，並進入狀態 16
+    NOT        偏移，並進入狀態 17
+    '('        偏移，並進入狀態 18
+    BOOL_LIT   偏移，並進入狀態 19
+    INT_LIT    偏移，並進入狀態 20
+    FLOAT_LIT  偏移，並進入狀態 21
+    STR_LIT    偏移，並進入狀態 22
+    IDENT      偏移，並進入狀態 23
+
+    Expression              進入狀態 198
+    LogicExpression         進入狀態 25
+    OrExpression            進入狀態 26
+    AndExpression           進入狀態 27
+    BitOrExpression         進入狀態 28
+    BitXorExpression        進入狀態 29
+    BitAndExpression        進入狀態 30
+    EqualExpression         進入狀態 31
+    CompareExpression       進入狀態 32
+    ShiftExpression         進入狀態 33
+    AddOPExpression         進入狀態 34
+    MulOPExpression         進入狀態 35
+    CastExpression          進入狀態 36
+    UnsignNumberExpression  進入狀態 37
+    LogicNotExpression      進入狀態 38
+    CallFunction            進入狀態 39
+    PrimaryExpression       進入狀態 40
+    IdentExpression         進入狀態 41
+    NumberExpression        進入狀態 42
+    BoolExpression          進入狀態 43
+
+
+狀態 175
+
+   81 ReturnCondition: RETURN Expression ';' •
+
+    $default  使用規則 81 以縮減 (ReturnCondition)
+
+
+狀態 176
+
+   68 Variable: IDENT VAL_ASSIGN • Expression
+
+    BAN        偏移，並進入狀態 14
+    BNT        偏移，並進入狀態 15
+    SUB        偏移，並進入狀態 16
+    NOT        偏移，並進入狀態 17
+    '('        偏移，並進入狀態 18
+    BOOL_LIT   偏移，並進入狀態 19
+    INT_LIT    偏移，並進入狀態 20
+    FLOAT_LIT  偏移，並進入狀態 21
+    STR_LIT    偏移，並進入狀態 22
+    IDENT      偏移，並進入狀態 23
+
+    Expression              進入狀態 199
+    LogicExpression         進入狀態 25
+    OrExpression            進入狀態 26
+    AndExpression           進入狀態 27
+    BitOrExpression         進入狀態 28
+    BitXorExpression        進入狀態 29
+    BitAndExpression        進入狀態 30
+    EqualExpression         進入狀態 31
+    CompareExpression       進入狀態 32
+    ShiftExpression         進入狀態 33
+    AddOPExpression         進入狀態 34
+    MulOPExpression         進入狀態 35
+    CastExpression          進入狀態 36
+    UnsignNumberExpression  進入狀態 37
+    LogicNotExpression      進入狀態 38
+    CallFunction            進入狀態 39
+    PrimaryExpression       進入狀態 40
+    IdentExpression         進入狀態 41
+    NumberExpression        進入狀態 42
+    BoolExpression          進入狀態 43
+
+
+狀態 177
+
+   69 Variable: IDENT '[' • NumberExpression ']' '[' NumberExpression ']'
+   70         | IDENT '[' • NumberExpression ']' VAL_ASSIGN '{' ArrayList '}'
+
+    INT_LIT    偏移，並進入狀態 20
+    FLOAT_LIT  偏移，並進入狀態 21
+
+    NumberExpression  進入狀態 200
+
+
+狀態 178
+
+   65 DefineVariables: DefineVariables ',' • Variable
+
+    IDENT  偏移，並進入狀態 147
+
+    Variable  進入狀態 201
+
+
+狀態 179
+
+   29 AssignmentStmt: IdentExpression VAL_ASSIGN Expression •
+
+    $default  使用規則 29 以縮減 (AssignmentStmt)
+
+
+狀態 180
+
+   30 AssignmentStmt: IdentExpression ADD_ASSIGN Expression •
+
+    $default  使用規則 30 以縮減 (AssignmentStmt)
+
+
+狀態 181
+
+   31 AssignmentStmt: IdentExpression SUB_ASSIGN Expression •
+
+    $default  使用規則 31 以縮減 (AssignmentStmt)
+
+
+狀態 182
+
+   32 AssignmentStmt: IdentExpression MUL_ASSIGN Expression •
+
+    $default  使用規則 32 以縮減 (AssignmentStmt)
+
+
+狀態 183
+
+   33 AssignmentStmt: IdentExpression DIV_ASSIGN Expression •
+
+    $default  使用規則 33 以縮減 (AssignmentStmt)
+
+
+狀態 184
+
+   34 AssignmentStmt: IdentExpression REM_ASSIGN Expression •
+
+    $default  使用規則 34 以縮減 (AssignmentStmt)
+
+
+狀態 185
+
+   37 AssignmentStmt: IdentExpression BAN_ASSIGN Expression •
+
+    $default  使用規則 37 以縮減 (AssignmentStmt)
+
+
+狀態 186
+
+   38 AssignmentStmt: IdentExpression BOR_ASSIGN Expression •
+
+    $default  使用規則 38 以縮減 (AssignmentStmt)
+
+
+狀態 187
+
+   39 AssignmentStmt: IdentExpression BXO_ASSIGN Expression •
+
+    $default  使用規則 39 以縮減 (AssignmentStmt)
+
+
+狀態 188
+
+   35 AssignmentStmt: IdentExpression SHR_ASSIGN Expression •
+
+    $default  使用規則 35 以縮減 (AssignmentStmt)
+
+
+狀態 189
+
+   36 AssignmentStmt: IdentExpression SHL_ASSIGN Expression •
+
+    $default  使用規則 36 以縮減 (AssignmentStmt)
+
+
+狀態 190
+
+   12 FunctionDefStmt: VARIABLE_T IDENT '[' ']' $@3 '(' FunctionParameterStmtList ')' '{' StmtList '}' •
+
+    $default  使用規則 12 以縮減 (FunctionDefStmt)
+
+
+狀態 191
+
+   79 CoutParmListStmt: CoutParmListStmt SHL Expression •
+
+    $default  使用規則 79 以縮減 (CoutParmListStmt)
+
+
+狀態 192
+
+   44 IfStmt: IF '(' Expression ')' • $@4 '{' StmtList '}' $@5 ElseStmt
+   46       | IF '(' Expression ')' • $@6 FunctionStmt
+
+    '{'       使用規則 42 以縮減 ($@4)
+    $default  使用規則 45 以縮減 ($@6)
+
+    $@4  進入狀態 202
+    $@6  進入狀態 203
+
+
+狀態 193
+
+  127 IdentExpression: IDENT •
+  128                | IDENT • '[' Expression ']'
+  129                | IDENT • '[' Expression ']' '[' Expression ']'
+
+    '['  偏移，並進入狀態 54
+
+    $default  使用規則 127 以縮減 (IdentExpression)
+
+
+狀態 194
+
+   60 InitDefine: AssignmentStmt •
+
+    $default  使用規則 60 以縮減 (InitDefine)
+
+
+狀態 195
+
+   56 ForStmt: FOR $@10 '(' ForDefine • ')' '{' StmtList '}'
+
+    ')'  偏移，並進入狀態 204
+
+
+狀態 196
+
+   57 ForDefine: InitDefine • ';' Expression ';' IterativeDefine
+
+    ';'  偏移，並進入狀態 205
+
+
+狀態 197
+
+   58 ForDefine: DefineStmt • ':' Expression
+   59 InitDefine: DefineStmt •
+
+    ':'  偏移，並進入狀態 206
+
+    $default  使用規則 59 以縮減 (InitDefine)
+
+
+狀態 198
+
+   54 WhileStmt: WHILE $@8 '(' Expression • ')' $@9 '{' StmtList '}'
+
+    ')'  偏移，並進入狀態 207
+
+
+狀態 199
+
+   68 Variable: IDENT VAL_ASSIGN Expression •
+
+    $default  使用規則 68 以縮減 (Variable)
+
+
+狀態 200
+
+   69 Variable: IDENT '[' NumberExpression • ']' '[' NumberExpression ']'
+   70         | IDENT '[' NumberExpression • ']' VAL_ASSIGN '{' ArrayList '}'
+
+    ']'  偏移，並進入狀態 208
+
+
+狀態 201
+
+   65 DefineVariables: DefineVariables ',' Variable •
+
+    $default  使用規則 65 以縮減 (DefineVariables)
+
+
+狀態 202
+
+   44 IfStmt: IF '(' Expression ')' $@4 • '{' StmtList '}' $@5 ElseStmt
+
+    '{'  偏移，並進入狀態 209
+
+
+狀態 203
+
+   46 IfStmt: IF '(' Expression ')' $@6 • FunctionStmt
+
+    COUT        偏移，並進入狀態 115
+    IF          偏移，並進入狀態 116
+    FOR         偏移，並進入狀態 117
+    WHILE       偏移，並進入狀態 118
+    RETURN      偏移，並進入狀態 119
+    BREAK       偏移，並進入狀態 120
+    CONTINUE    偏移，並進入狀態 121
+    ';'         偏移，並進入狀態 122
+    VARIABLE_T  偏移，並進入狀態 123
+    IDENT       偏移，並進入狀態 23
+
+    FunctionStmt     進入狀態 210
+    AssignmentStmt   進入狀態 126
+    IfStmt           進入狀態 127
+    LoopStmt         進入狀態 128
+    WhileStmt        進入狀態 129
+    ForStmt          進入狀態 130
+    DefineStmt       進入狀態 131
+    Stmt             進入狀態 132
+    ReturnCondition  進入狀態 133
+    CallFunction     進入狀態 134
+    IdentExpression  進入狀態 135
+
+
+狀態 204
+
+   56 ForStmt: FOR $@10 '(' ForDefine ')' • '{' StmtList '}'
+
+    '{'  偏移，並進入狀態 211
+
+
+狀態 205
+
+   57 ForDefine: InitDefine ';' • Expression ';' IterativeDefine
+
+    BAN        偏移，並進入狀態 14
+    BNT        偏移，並進入狀態 15
+    SUB        偏移，並進入狀態 16
+    NOT        偏移，並進入狀態 17
+    '('        偏移，並進入狀態 18
+    BOOL_LIT   偏移，並進入狀態 19
+    INT_LIT    偏移，並進入狀態 20
+    FLOAT_LIT  偏移，並進入狀態 21
+    STR_LIT    偏移，並進入狀態 22
+    IDENT      偏移，並進入狀態 23
+
+    Expression              進入狀態 212
+    LogicExpression         進入狀態 25
+    OrExpression            進入狀態 26
+    AndExpression           進入狀態 27
+    BitOrExpression         進入狀態 28
+    BitXorExpression        進入狀態 29
+    BitAndExpression        進入狀態 30
+    EqualExpression         進入狀態 31
+    CompareExpression       進入狀態 32
+    ShiftExpression         進入狀態 33
+    AddOPExpression         進入狀態 34
+    MulOPExpression         進入狀態 35
+    CastExpression          進入狀態 36
+    UnsignNumberExpression  進入狀態 37
+    LogicNotExpression      進入狀態 38
+    CallFunction            進入狀態 39
+    PrimaryExpression       進入狀態 40
+    IdentExpression         進入狀態 41
+    NumberExpression        進入狀態 42
+    BoolExpression          進入狀態 43
+
+
+狀態 206
+
+   58 ForDefine: DefineStmt ':' • Expression
+
+    BAN        偏移，並進入狀態 14
+    BNT        偏移，並進入狀態 15
+    SUB        偏移，並進入狀態 16
+    NOT        偏移，並進入狀態 17
+    '('        偏移，並進入狀態 18
+    BOOL_LIT   偏移，並進入狀態 19
+    INT_LIT    偏移，並進入狀態 20
+    FLOAT_LIT  偏移，並進入狀態 21
+    STR_LIT    偏移，並進入狀態 22
+    IDENT      偏移，並進入狀態 23
+
+    Expression              進入狀態 213
+    LogicExpression         進入狀態 25
+    OrExpression            進入狀態 26
+    AndExpression           進入狀態 27
+    BitOrExpression         進入狀態 28
+    BitXorExpression        進入狀態 29
+    BitAndExpression        進入狀態 30
+    EqualExpression         進入狀態 31
+    CompareExpression       進入狀態 32
+    ShiftExpression         進入狀態 33
+    AddOPExpression         進入狀態 34
+    MulOPExpression         進入狀態 35
+    CastExpression          進入狀態 36
+    UnsignNumberExpression  進入狀態 37
+    LogicNotExpression      進入狀態 38
+    CallFunction            進入狀態 39
+    PrimaryExpression       進入狀態 40
+    IdentExpression         進入狀態 41
+    NumberExpression        進入狀態 42
+    BoolExpression          進入狀態 43
+
+
+狀態 207
+
+   54 WhileStmt: WHILE $@8 '(' Expression ')' • $@9 '{' StmtList '}'
+
+    $default  使用規則 53 以縮減 ($@9)
+
+    $@9  進入狀態 214
+
+
+狀態 208
+
+   69 Variable: IDENT '[' NumberExpression ']' • '[' NumberExpression ']'
+   70         | IDENT '[' NumberExpression ']' • VAL_ASSIGN '{' ArrayList '}'
+
+    VAL_ASSIGN  偏移，並進入狀態 215
+    '['         偏移，並進入狀態 216
+
+
+狀態 209
+
+   44 IfStmt: IF '(' Expression ')' $@4 '{' • StmtList '}' $@5 ElseStmt
+
+    COUT        偏移，並進入狀態 115
+    IF          偏移，並進入狀態 116
+    FOR         偏移，並進入狀態 117
+    WHILE       偏移，並進入狀態 118
+    RETURN      偏移，並進入狀態 119
+    BREAK       偏移，並進入狀態 120
+    CONTINUE    偏移，並進入狀態 121
+    ';'         偏移，並進入狀態 122
+    VARIABLE_T  偏移，並進入狀態 123
+    IDENT       偏移，並進入狀態 23
+
+    StmtList         進入狀態 217
+    FunctionStmt     進入狀態 125
+    AssignmentStmt   進入狀態 126
+    IfStmt           進入狀態 127
+    LoopStmt         進入狀態 128
+    WhileStmt        進入狀態 129
+    ForStmt          進入狀態 130
+    DefineStmt       進入狀態 131
+    Stmt             進入狀態 132
+    ReturnCondition  進入狀態 133
+    CallFunction     進入狀態 134
+    IdentExpression  進入狀態 135
+
+
+狀態 210
+
+   46 IfStmt: IF '(' Expression ')' $@6 FunctionStmt •
+
+    $default  使用規則 46 以縮減 (IfStmt)
+
+
+狀態 211
+
+   56 ForStmt: FOR $@10 '(' ForDefine ')' '{' • StmtList '}'
+
+    COUT        偏移，並進入狀態 115
+    IF          偏移，並進入狀態 116
+    FOR         偏移，並進入狀態 117
+    WHILE       偏移，並進入狀態 118
+    RETURN      偏移，並進入狀態 119
+    BREAK       偏移，並進入狀態 120
+    CONTINUE    偏移，並進入狀態 121
+    ';'         偏移，並進入狀態 122
+    VARIABLE_T  偏移，並進入狀態 123
+    IDENT       偏移，並進入狀態 23
+
+    StmtList         進入狀態 218
+    FunctionStmt     進入狀態 125
+    AssignmentStmt   進入狀態 126
+    IfStmt           進入狀態 127
+    LoopStmt         進入狀態 128
+    WhileStmt        進入狀態 129
+    ForStmt          進入狀態 130
+    DefineStmt       進入狀態 131
+    Stmt             進入狀態 132
+    ReturnCondition  進入狀態 133
+    CallFunction     進入狀態 134
+    IdentExpression  進入狀態 135
+
+
+狀態 212
+
+   57 ForDefine: InitDefine ';' Expression • ';' IterativeDefine
+
+    ';'  偏移，並進入狀態 219
+
+
+狀態 213
+
+   58 ForDefine: DefineStmt ':' Expression •
+
+    $default  使用規則 58 以縮減 (ForDefine)
+
+
+狀態 214
+
+   54 WhileStmt: WHILE $@8 '(' Expression ')' $@9 • '{' StmtList '}'
+
+    '{'  偏移，並進入狀態 220
+
+
+狀態 215
+
+   70 Variable: IDENT '[' NumberExpression ']' VAL_ASSIGN • '{' ArrayList '}'
+
+    '{'  偏移，並進入狀態 221
+
+
+狀態 216
+
+   69 Variable: IDENT '[' NumberExpression ']' '[' • NumberExpression ']'
+
+    INT_LIT    偏移，並進入狀態 20
+    FLOAT_LIT  偏移，並進入狀態 21
+
+    NumberExpression  進入狀態 222
+
+
+狀態 217
+
+   21 StmtList: StmtList • FunctionStmt
+   44 IfStmt: IF '(' Expression ')' $@4 '{' StmtList • '}' $@5 ElseStmt
+
+    COUT        偏移，並進入狀態 115
+    IF          偏移，並進入狀態 116
+    FOR         偏移，並進入狀態 117
+    WHILE       偏移，並進入狀態 118
+    RETURN      偏移，並進入狀態 119
+    BREAK       偏移，並進入狀態 120
+    CONTINUE    偏移，並進入狀態 121
+    '}'         偏移，並進入狀態 223
+    ';'         偏移，並進入狀態 122
+    VARIABLE_T  偏移，並進入狀態 123
+    IDENT       偏移，並進入狀態 23
+
+    FunctionStmt     進入狀態 151
+    AssignmentStmt   進入狀態 126
+    IfStmt           進入狀態 127
+    LoopStmt         進入狀態 128
+    WhileStmt        進入狀態 129
+    ForStmt          進入狀態 130
+    DefineStmt       進入狀態 131
+    Stmt             進入狀態 132
+    ReturnCondition  進入狀態 133
+    CallFunction     進入狀態 134
+    IdentExpression  進入狀態 135
+
+
+狀態 218
+
+   21 StmtList: StmtList • FunctionStmt
+   56 ForStmt: FOR $@10 '(' ForDefine ')' '{' StmtList • '}'
+
+    COUT        偏移，並進入狀態 115
+    IF          偏移，並進入狀態 116
+    FOR         偏移，並進入狀態 117
+    WHILE       偏移，並進入狀態 118
+    RETURN      偏移，並進入狀態 119
+    BREAK       偏移，並進入狀態 120
+    CONTINUE    偏移，並進入狀態 121
+    '}'         偏移，並進入狀態 224
+    ';'         偏移，並進入狀態 122
+    VARIABLE_T  偏移，並進入狀態 123
+    IDENT       偏移，並進入狀態 23
+
+    FunctionStmt     進入狀態 151
+    AssignmentStmt   進入狀態 126
+    IfStmt           進入狀態 127
+    LoopStmt         進入狀態 128
+    WhileStmt        進入狀態 129
+    ForStmt          進入狀態 130
+    DefineStmt       進入狀態 131
+    Stmt             進入狀態 132
+    ReturnCondition  進入狀態 133
+    CallFunction     進入狀態 134
+    IdentExpression  進入狀態 135
+
+
+狀態 219
+
+   57 ForDefine: InitDefine ';' Expression ';' • IterativeDefine
+
+    IDENT  偏移，並進入狀態 193
+
+    $default  使用規則 63 以縮減 (IterativeDefine)
+
+    AssignmentStmt   進入狀態 225
+    IterativeDefine  進入狀態 226
+    IdentExpression  進入狀態 135
+
+
+狀態 220
+
+   54 WhileStmt: WHILE $@8 '(' Expression ')' $@9 '{' • StmtList '}'
+
+    COUT        偏移，並進入狀態 115
+    IF          偏移，並進入狀態 116
+    FOR         偏移，並進入狀態 117
+    WHILE       偏移，並進入狀態 118
+    RETURN      偏移，並進入狀態 119
+    BREAK       偏移，並進入狀態 120
+    CONTINUE    偏移，並進入狀態 121
+    ';'         偏移，並進入狀態 122
+    VARIABLE_T  偏移，並進入狀態 123
+    IDENT       偏移，並進入狀態 23
+
+    StmtList         進入狀態 227
+    FunctionStmt     進入狀態 125
+    AssignmentStmt   進入狀態 126
+    IfStmt           進入狀態 127
+    LoopStmt         進入狀態 128
+    WhileStmt        進入狀態 129
+    ForStmt          進入狀態 130
+    DefineStmt       進入狀態 131
+    Stmt             進入狀態 132
+    ReturnCondition  進入狀態 133
+    CallFunction     進入狀態 134
+    IdentExpression  進入狀態 135
+
+
+狀態 221
+
+   70 Variable: IDENT '[' NumberExpression ']' VAL_ASSIGN '{' • ArrayList '}'
+
+    BAN        偏移，並進入狀態 14
+    BNT        偏移，並進入狀態 15
+    SUB        偏移，並進入狀態 16
+    NOT        偏移，並進入狀態 17
+    '('        偏移，並進入狀態 18
+    BOOL_LIT   偏移，並進入狀態 19
+    INT_LIT    偏移，並進入狀態 20
+    FLOAT_LIT  偏移，並進入狀態 21
+    STR_LIT    偏移，並進入狀態 22
+    IDENT      偏移，並進入狀態 23
+
+    $default  使用規則 73 以縮減 (ArrayList)
+
+    ArrayList               進入狀態 228
+    Expression              進入狀態 229
+    LogicExpression         進入狀態 25
+    OrExpression            進入狀態 26
+    AndExpression           進入狀態 27
+    BitOrExpression         進入狀態 28
+    BitXorExpression        進入狀態 29
+    BitAndExpression        進入狀態 30
+    EqualExpression         進入狀態 31
+    CompareExpression       進入狀態 32
+    ShiftExpression         進入狀態 33
+    AddOPExpression         進入狀態 34
+    MulOPExpression         進入狀態 35
+    CastExpression          進入狀態 36
+    UnsignNumberExpression  進入狀態 37
+    LogicNotExpression      進入狀態 38
+    CallFunction            進入狀態 39
+    PrimaryExpression       進入狀態 40
+    IdentExpression         進入狀態 41
+    NumberExpression        進入狀態 42
+    BoolExpression          進入狀態 43
+
+
+狀態 222
+
+   69 Variable: IDENT '[' NumberExpression ']' '[' NumberExpression • ']'
+
+    ']'  偏移，並進入狀態 230
+
+
+狀態 223
+
+   44 IfStmt: IF '(' Expression ')' $@4 '{' StmtList '}' • $@5 ElseStmt
+
+    $default  使用規則 43 以縮減 ($@5)
+
+    $@5  進入狀態 231
+
+
+狀態 224
+
+   56 ForStmt: FOR $@10 '(' ForDefine ')' '{' StmtList '}' •
+
+    $default  使用規則 56 以縮減 (ForStmt)
+
+
+狀態 225
+
+   62 IterativeDefine: AssignmentStmt •
+
+    $default  使用規則 62 以縮減 (IterativeDefine)
+
+
+狀態 226
+
+   57 ForDefine: InitDefine ';' Expression ';' IterativeDefine •
+
+    $default  使用規則 57 以縮減 (ForDefine)
+
+
+狀態 227
+
+   21 StmtList: StmtList • FunctionStmt
+   54 WhileStmt: WHILE $@8 '(' Expression ')' $@9 '{' StmtList • '}'
+
+    COUT        偏移，並進入狀態 115
+    IF          偏移，並進入狀態 116
+    FOR         偏移，並進入狀態 117
+    WHILE       偏移，並進入狀態 118
+    RETURN      偏移，並進入狀態 119
+    BREAK       偏移，並進入狀態 120
+    CONTINUE    偏移，並進入狀態 121
+    '}'         偏移，並進入狀態 232
+    ';'         偏移，並進入狀態 122
+    VARIABLE_T  偏移，並進入狀態 123
+    IDENT       偏移，並進入狀態 23
+
+    FunctionStmt     進入狀態 151
+    AssignmentStmt   進入狀態 126
+    IfStmt           進入狀態 127
+    LoopStmt         進入狀態 128
+    WhileStmt        進入狀態 129
+    ForStmt          進入狀態 130
+    DefineStmt       進入狀態 131
+    Stmt             進入狀態 132
+    ReturnCondition  進入狀態 133
+    CallFunction     進入狀態 134
+    IdentExpression  進入狀態 135
+
+
+狀態 228
+
+   70 Variable: IDENT '[' NumberExpression ']' VAL_ASSIGN '{' ArrayList • '}'
+   71 ArrayList: ArrayList • ',' Expression
+
+    '}'  偏移，並進入狀態 233
+    ','  偏移，並進入狀態 234
+
+
+狀態 229
+
+   72 ArrayList: Expression •
+
+    $default  使用規則 72 以縮減 (ArrayList)
+
+
+狀態 230
+
+   69 Variable: IDENT '[' NumberExpression ']' '[' NumberExpression ']' •
+
+    $default  使用規則 69 以縮減 (Variable)
+
+
+狀態 231
+
+   44 IfStmt: IF '(' Expression ')' $@4 '{' StmtList '}' $@5 • ElseStmt
+
+    ELSE  偏移，並進入狀態 235
+
+    $default  使用規則 49 以縮減 (ElseStmt)
+
+    ElseStmt  進入狀態 236
+
+
+狀態 232
+
+   54 WhileStmt: WHILE $@8 '(' Expression ')' $@9 '{' StmtList '}' •
+
+    $default  使用規則 54 以縮減 (WhileStmt)
+
+
+狀態 233
+
+   70 Variable: IDENT '[' NumberExpression ']' VAL_ASSIGN '{' ArrayList '}' •
+
+    $default  使用規則 70 以縮減 (Variable)
+
+
+狀態 234
+
+   71 ArrayList: ArrayList ',' • Expression
+
+    BAN        偏移，並進入狀態 14
+    BNT        偏移，並進入狀態 15
+    SUB        偏移，並進入狀態 16
+    NOT        偏移，並進入狀態 17
+    '('        偏移，並進入狀態 18
+    BOOL_LIT   偏移，並進入狀態 19
+    INT_LIT    偏移，並進入狀態 20
+    FLOAT_LIT  偏移，並進入狀態 21
+    STR_LIT    偏移，並進入狀態 22
+    IDENT      偏移，並進入狀態 23
+
+    Expression              進入狀態 237
+    LogicExpression         進入狀態 25
+    OrExpression            進入狀態 26
+    AndExpression           進入狀態 27
+    BitOrExpression         進入狀態 28
+    BitXorExpression        進入狀態 29
+    BitAndExpression        進入狀態 30
+    EqualExpression         進入狀態 31
+    CompareExpression       進入狀態 32
+    ShiftExpression         進入狀態 33
+    AddOPExpression         進入狀態 34
+    MulOPExpression         進入狀態 35
+    CastExpression          進入狀態 36
+    UnsignNumberExpression  進入狀態 37
+    LogicNotExpression      進入狀態 38
+    CallFunction            進入狀態 39
+    PrimaryExpression       進入狀態 40
+    IdentExpression         進入狀態 41
+    NumberExpression        進入狀態 42
+    BoolExpression          進入狀態 43
+
+
+狀態 235
+
+   48 ElseStmt: ELSE • $@7 '{' StmtList '}'
+
+    $default  使用規則 47 以縮減 ($@7)
+
+    $@7  進入狀態 238
+
+
+狀態 236
+
+   44 IfStmt: IF '(' Expression ')' $@4 '{' StmtList '}' $@5 ElseStmt •
+
+    $default  使用規則 44 以縮減 (IfStmt)
+
+
+狀態 237
+
+   71 ArrayList: ArrayList ',' Expression •
+
+    $default  使用規則 71 以縮減 (ArrayList)
+
+
+狀態 238
+
+   48 ElseStmt: ELSE $@7 • '{' StmtList '}'
+
+    '{'  偏移，並進入狀態 239
+
+
+狀態 239
+
+   48 ElseStmt: ELSE $@7 '{' • StmtList '}'
+
+    COUT        偏移，並進入狀態 115
+    IF          偏移，並進入狀態 116
+    FOR         偏移，並進入狀態 117
+    WHILE       偏移，並進入狀態 118
+    RETURN      偏移，並進入狀態 119
+    BREAK       偏移，並進入狀態 120
+    CONTINUE    偏移，並進入狀態 121
+    ';'         偏移，並進入狀態 122
+    VARIABLE_T  偏移，並進入狀態 123
+    IDENT       偏移，並進入狀態 23
+
+    StmtList         進入狀態 240
+    FunctionStmt     進入狀態 125
+    AssignmentStmt   進入狀態 126
+    IfStmt           進入狀態 127
+    LoopStmt         進入狀態 128
+    WhileStmt        進入狀態 129
+    ForStmt          進入狀態 130
+    DefineStmt       進入狀態 131
+    Stmt             進入狀態 132
+    ReturnCondition  進入狀態 133
+    CallFunction     進入狀態 134
+    IdentExpression  進入狀態 135
+
+
+狀態 240
+
+   21 StmtList: StmtList • FunctionStmt
+   48 ElseStmt: ELSE $@7 '{' StmtList • '}'
+
+    COUT        偏移，並進入狀態 115
+    IF          偏移，並進入狀態 116
+    FOR         偏移，並進入狀態 117
+    WHILE       偏移，並進入狀態 118
+    RETURN      偏移，並進入狀態 119
+    BREAK       偏移，並進入狀態 120
+    CONTINUE    偏移，並進入狀態 121
+    '}'         偏移，並進入狀態 241
+    ';'         偏移，並進入狀態 122
+    VARIABLE_T  偏移，並進入狀態 123
+    IDENT       偏移，並進入狀態 23
+
+    FunctionStmt     進入狀態 151
+    AssignmentStmt   進入狀態 126
+    IfStmt           進入狀態 127
+    LoopStmt         進入狀態 128
+    WhileStmt        進入狀態 129
+    ForStmt          進入狀態 130
+    DefineStmt       進入狀態 131
+    Stmt             進入狀態 132
+    ReturnCondition  進入狀態 133
+    CallFunction     進入狀態 134
+    IdentExpression  進入狀態 135
+
+
+狀態 241
+
+   48 ElseStmt: ELSE $@7 '{' StmtList '}' •
+
+    $default  使用規則 48 以縮減 (ElseStmt)

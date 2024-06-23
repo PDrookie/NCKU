@@ -1,0 +1,542 @@
+/* Definition section */
+%{
+    #include "compiler_util.h"
+    #include "main.h"
+
+    int yydebug = 1;
+%}
+
+/* Variable or self-defined structure */
+%union {
+    ObjectType var_type;
+
+    bool b_var;
+    char c_var;
+    int32_t i_var;
+    int64_t l_var;
+    float f_var;
+    double d_var;
+    char *s_var;
+
+    Object obj_val;
+
+    //LinkList<Object*>
+    LinkedList* array_subscript;
+}
+
+/* Token without return */
+%token COUT
+%token SHR SHL BAN BOR BNT BXO ADD SUB MUL DIV REM NOT GTR LES GEQ LEQ EQL NEQ LAN LOR
+%token VAL_ASSIGN ADD_ASSIGN SUB_ASSIGN MUL_ASSIGN DIV_ASSIGN REM_ASSIGN BAN_ASSIGN BOR_ASSIGN BXO_ASSIGN SHR_ASSIGN SHL_ASSIGN INC_ASSIGN DEC_ASSIGN
+%token IF ELSE FOR WHILE RETURN BREAK CONTINUE
+
+/* Token with return, which need to sepcify type */
+%token <var_type> VARIABLE_T
+%token <b_var> BOOL_LIT
+%token <c_var> CHAR_LIT
+%token <i_var> INT_LIT
+%token <f_var> FLOAT_LIT
+%token <s_var> STR_LIT
+%token <s_var> IDENT
+
+/* Nonterminal with return, which need to sepcify type */
+%type <obj_val> AssignmentStmt
+%type <obj_val> Variable 
+//%type <obj_val> CallFunction
+//%type <obj_val> ArrayList
+%type <obj_val> Expression
+%type <obj_val> LogicExpression
+%type <obj_val> OrExpression
+%type <obj_val> AndExpression
+%type <obj_val> BitOrExpression
+%type <obj_val> BitXorExpression
+%type <obj_val> BitAndExpression
+%type <obj_val> EqualExpression
+%type <obj_val> CompareExpression
+%type <obj_val> ShiftExpression
+%type <obj_val> AddOPExpression
+%type <obj_val> MulOPExpression
+%type <obj_val> CastExpression
+%type <obj_val> PrimaryExpression
+%type <obj_val> IdentExpression
+%type <obj_val> UnsignNumberExpression
+%type <obj_val> LogicNotExpression
+%type <obj_val> NumberExpression
+%type <obj_val> BoolExpression
+//%type <array_subscript> ArraySubscriptStmtList
+
+%left ADD SUB
+%left MUL DIV REM
+
+%nonassoc THEN
+%nonassoc ELSE
+
+/* Yacc will start at this nonterminal */
+%start Program
+
+%%
+/* Grammar section */
+
+Program
+    : { pushScope(); } GlobalStmtList { dumpScope(); }
+    | /* Empty file */
+;
+
+GlobalStmtList 
+    : GlobalStmtList GlobalStmt
+    | GlobalStmt
+;
+
+GlobalStmt
+    : DefineVariableStmt
+    | FunctionDefStmt
+;
+
+DefineVariableStmt
+    : VARIABLE_T IDENT VAL_ASSIGN Expression ';'
+;
+
+/* Function */
+FunctionDefStmt
+    : VARIABLE_T IDENT { functionBegin($<var_type>1, NULL, $<s_var>2); } '(' FunctionParameterStmtList ')' 
+    { functionLocalsBegin(); } '{' StmtList '}' 
+    {   if(checkMain() && !checkReturn()) returnObject(NULL);
+        codeRaw(".end method"); 
+        dumpScope(); }
+;
+
+FunctionParameterStmtList 
+    : FunctionParameterStmtList ',' FunctionParameterStmt
+    | FunctionParameterStmt
+    | /* Empty function parameter */
+;
+FunctionParameterStmt
+    : VARIABLE_T IDENT { functionParmPush($<var_type>1, NULL, $<s_var>2); }
+    | VARIABLE_T IDENT '[' ']' { functionParmPush($<var_type>1, NULL, $<s_var>2); }
+;
+
+/* Scope */
+StmtList 
+    : StmtList FunctionStmt
+    | FunctionStmt
+;
+
+FunctionStmt
+    : ';'
+    | BodyStmt
+    | AssignmentStmt ';'
+    | DefineStmt ';'
+    | IfStmt
+    | LoopStmt
+;
+
+AssignmentStmt
+    : IdentExpression VAL_ASSIGN Expression { printf("EQL_ASSIGN\n"); typeStore(&$<obj_val>1); }
+    | IdentExpression ADD_ASSIGN Expression { printf("ADD_ASSIGN\n"); opassignment(&$<obj_val>1, "add"); }
+    | IdentExpression SUB_ASSIGN Expression { printf("SUB_ASSIGN\n"); opassignment(&$<obj_val>1, "sub"); }
+    | IdentExpression MUL_ASSIGN Expression { printf("MUL_ASSIGN\n"); opassignment(&$<obj_val>1, "mul"); }
+    | IdentExpression DIV_ASSIGN Expression { printf("DIV_ASSIGN\n"); opassignment(&$<obj_val>1, "div"); }
+    | IdentExpression REM_ASSIGN Expression { printf("REM_ASSIGN\n"); logicassignment(&$<obj_val>1, "rem"); }
+    | IdentExpression SHR_ASSIGN Expression { printf("SHR_ASSIGN\n"); logicassignment(&$<obj_val>1, "iushr"); }
+    | IdentExpression SHL_ASSIGN Expression { printf("SHL_ASSIGN\n"); logicassignment(&$<obj_val>1, "ishl"); }
+    | IdentExpression BAN_ASSIGN Expression { printf("BAN_ASSIGN\n"); logicassignment(&$<obj_val>1, "iand"); }
+    | IdentExpression BOR_ASSIGN Expression { printf("BOR_ASSIGN\n"); logicassignment(&$<obj_val>1, "ixor"); }
+    | IdentExpression BXO_ASSIGN Expression { printf("BXO_ASSIGN\n"); logicassignment(&$<obj_val>1, "add"); }
+    | IdentExpression INC_ASSIGN { printf("INC_ASSIGN\n");
+                                   typeload(&$<obj_val>1);
+                                   if($1.type == OBJECT_TYPE_INT){
+                                        codeRaw("\ticonst_1");
+                                        codeRaw("\tiadd");
+                                   }
+                                   else{
+                                        codeRaw("\ficonst_1");
+                                        codeRaw("\tfadd");
+                                   }
+                                   typeStore(&$<obj_val>1);
+                                 }
+    | IdentExpression DEC_ASSIGN { printf("DEC_ASSIGN\n");
+                                   typeload(&$<obj_val>1);
+                                   if($1.type == OBJECT_TYPE_INT){
+                                        codeRaw("\ticonst_1");
+                                        codeRaw("\tisub");
+                                   }
+                                   else{
+                                        codeRaw("\ficonst_1");
+                                        codeRaw("\tfsub");
+                                   }
+                                   typeStore(&$<obj_val>1);
+                                 }
+;
+
+//AssignmentOP
+
+/* IfElse */
+IfStmt
+    : IF '(' Expression ')' { printf("IF\n"); pushScope(); } '{' StmtList '}' { dumpScope(); } ElseStmt
+    | IF '(' Expression ')' { printf("IF\n"); } FunctionStmt
+;
+
+ElseStmt
+    : ELSE { printf("ELSE\n"); pushScope(); } '{' StmtList '}' { dumpScope(); }
+    | /* Empty else */
+;
+
+/* Loop */
+LoopStmt
+    : WhileStmt
+    | ForStmt
+;
+
+WhileStmt
+    : WHILE { printf("WHILE\n"); } '(' Expression ')' { pushScope(); } '{' StmtList '}' { dumpScope(); }
+;
+
+ForStmt
+    : FOR { printf("FOR\n"); pushScope(); } '(' ForDefine ')' '{' StmtList '}' { dumpScope(); }
+;
+
+ForDefine
+    : InitDefine ';' Expression ';' IterativeDefine 
+    | DefineStmt ':' Expression { /*DefineVariableType($<var_type>3);*/ }
+;
+
+InitDefine
+    : DefineStmt
+    | AssignmentStmt
+    | /* Empty for init */
+;
+
+IterativeDefine
+    : AssignmentStmt
+    | /* Empty for Iterative */
+;
+
+/* Define */
+DefineStmt
+    : VARIABLE_T DefineVariables { initVariable($<var_type>1); }
+;
+
+DefineVariables
+    : DefineVariables ',' Variable
+    | Variable
+;
+
+Variable
+    : IDENT { createVariable(OBJECT_TYPE_UNDEFINED, NULL, $<s_var>1, NULL); }
+    | IDENT VAL_ASSIGN Expression { createVariable($3.type, NULL, $<s_var>1, NULL); }
+    | IDENT '[' NumberExpression ']' '[' NumberExpression ']' { /*createVariable(OBJECT_TYPE_UNDEFINED, NULL(array?), $<s_var>1, NULL);*/ }
+    //| IDENT '[' NumberExpression ']' VAL_ASSIGN '{' ArrayList '}' { 
+        //countArrayNum(1);         
+        //createVariable(OBJECT_TYPE_UNDEFINED, NULL(array?), $<s_var>1, NULL); 
+    // }
+;
+
+//ArrayList
+//    : ArrayList ',' Expression { countArrayNum(0); $$ = $3; }
+//    | Expression { countArrayNum(0); $$ = $1;}
+//    | /* Empty array list */
+//;
+
+BodyStmt
+    : COUT CoutParmListStmt ';'
+    | ReturnCondition    
+    | BREAK ';' { breakLoop(); }
+    | CONTINUE ';' { printf("CONTINUE\n"); }
+;
+
+CoutParmListStmt
+    : CoutParmListStmt SHL Expression { stdoutPrint(&$<obj_val>3); }
+    | SHL Expression { stdoutPrint(&$<obj_val>2); }
+;
+
+ReturnCondition
+    : RETURN { doReturn(); } Expression ';' { printf("RETURN\n"); returnObject(&$<obj_val>2); }
+    | RETURN { doReturn(); } ';' { printf("RETURN\n"); returnObject(NULL); }
+;
+
+/*expression*/
+Expression
+    : LogicExpression
+;
+
+LogicExpression
+    : OrExpression { $$ = $1; }
+;
+
+OrExpression
+    : OrExpression LOR AndExpression { 
+        // bool check
+        printf("LOR\n"); 
+        //logicboolean("ior"); // if wrong then try
+        codeRaw("ior");
+        $$ = $3; 
+      }
+    | AndExpression { $$ = $1; }
+;
+
+AndExpression
+    : AndExpression LAN BitOrExpression { 
+        // bool check
+        printf("LAN\n");
+        //logicboolean("iand"); // if wrong then try
+        codeRaw("iand");
+        $$ = $3; 
+      }
+    | BitOrExpression { $$ = $1; }
+;
+
+BitOrExpression
+    : BitOrExpression BOR BitXorExpression { 
+        // bool check
+        printf("BOR\n"); 
+        codeRaw("\tior");
+        $$ = $3; 
+      } 
+    | BitXorExpression { $$ = $1; }
+;
+
+BitXorExpression
+    : BitXorExpression BXO BitAndExpression { 
+        // bool check
+        printf("BXO\n"); 
+        codeRaw("\tixor");
+        $$ = $3; 
+      } 
+    | BitAndExpression { $$ = $1; }
+;
+
+BitAndExpression
+    : BitAndExpression BAN EqualExpression { 
+        // bool check
+        printf("BAN\n"); 
+        codeRaw("\tiand");
+        $$ = $3; 
+      }
+    | EqualExpression { $$ = $1; }
+;
+
+EqualExpression
+    : EqualExpression NEQ CompareExpression { 
+        // bool check
+        printf("NEQ\n"); 
+        greaterlower(&$<obj_val>1, "ifne")
+        $$ = $3; 
+      }
+    | EqualExpression EQL CompareExpression { 
+        // bool check
+        printf("EQL\n"); 
+        //forcomparison(&$<obj_val>1, "ifeq")
+        $$ = $3; 
+      } 
+    | CompareExpression { $$ = $1; }
+;
+
+CompareExpression
+    : CompareExpression GTR ShiftExpression { 
+        // bool check
+        printf("GTR\n"); 
+        //forcomparison(&$<obj_val>1, "ifgt")
+        $$ = $3; 
+      }
+    | CompareExpression LES ShiftExpression { 
+        // bool check
+        printf("LES\n"); 
+        //forcomparison(&$<obj_val>1, "iflt")
+        $$ = $3; 
+      }
+    | CompareExpression GEQ ShiftExpression { 
+        // bool check
+        printf("GEQ\n"); 
+        //forcomparison(&$<obj_val>1, "ifge")
+        $$ = $3; 
+      }
+    | CompareExpression LEQ ShiftExpression { 
+        // bool check
+        printf("LEQ\n"); 
+        //forcomparison(&$<obj_val>1, "ifle")
+        $$ = $3; 
+      }
+    | ShiftExpression { $$ = $1; }
+;
+
+ShiftExpression
+    : ShiftExpression SHR AddOPExpression { 
+        // bool check
+        printf("SHR\n"); 
+        codeRaw("\tiushr");
+        $$ = $3; 
+      }
+    | AddOPExpression { $$ = $1; }
+;
+
+AddOPExpression
+    : AddOPExpression ADD MulOPExpression { 
+        // bool check
+        printf("ADD\n");
+        if($1.type == OBJECT_TYPE_INT) codeRaw("\tiadd");
+        else codeRaw("\tfadd");
+        $$ = $3; 
+      }
+    | AddOPExpression SUB MulOPExpression { 
+        // bool check
+        printf("SUB\n"); 
+        if($1.type == OBJECT_TYPE_INT) codeRaw("\tisub");
+        else codeRaw("\tfsub");
+        $$ = $3; 
+      }
+    | MulOPExpression { $$ = $1; }
+;
+
+MulOPExpression
+    : MulOPExpression MUL CastExpression { 
+        // bool check
+        printf("MUL\n"); 
+        if($1.type == OBJECT_TYPE_INT) codeRaw("\timul");
+        else codeRaw("\tfmul");
+        $$ = $3; 
+      } 
+    | MulOPExpression DIV CastExpression { 
+        // bool check
+        printf("DIV\n"); 
+        if($1.type == OBJECT_TYPE_INT) codeRaw("\tidiv");
+        else codeRaw("\tfdiv");
+        $$ = $3; 
+      } 
+    | MulOPExpression REM CastExpression { 
+        // bool check
+        printf("REM\n"); 
+        codeRaw("\tirem");
+        $$ = $3; 
+      } 
+    | CastExpression { $$ = $1; }
+;
+
+// still need config 
+CastExpression
+    : '(' VARIABLE_T ')' UnsignNumberExpression { 
+        // bool check
+        CastVariable($4.type, $<var_type>2);
+        $$.type = $<var_type>2;
+      } 
+    | UnsignNumberExpression { $$ = $1; }
+;
+
+UnsignNumberExpression
+    : SUB UnsignNumberExpression { 
+        // bool check
+        printf("NEG\n"); 
+        if($2.type == OBJECT_TYPE_INT) codeRaw("\tineg");
+        else codeRaw("\tfneg");
+        $$ = $2; 
+      }
+    | NOT UnsignNumberExpression { 
+        // bool check
+        printf("NOT\n"); 
+        codeRaw("\ticonst_1");
+        codeRaw("\tixor");
+        $$ = $2; 
+      }
+    | LogicNotExpression { $$ = $1; }
+;
+
+LogicNotExpression
+    : BNT LogicNotExpression { 
+        // bool check
+        printf("BNT\n"); 
+        codeRaw("\ticonst_m1");
+        codeRaw("\tixor");
+        $$ = $2; 
+      }
+    | BAN LogicNotExpression { 
+        // bool check
+        printf("BAN\n"); 
+        codeRaw("\tiand");
+        $$ = $2; 
+      }
+    //| CallFunction { $$ = $1; }
+    | PrimaryExpression { $$ = $1; }
+;
+
+/*
+CallFunction
+    : IDENT '(' FunctionList ')' {
+        Object *obj = findVariable($1);
+        printf("IDENT (name=%s, address=%ld)\n", $1, obj->symbol->addr);
+        printf("call: %s%s\n", obj->symbol->name, obj->symbol->func_sig);
+        if(!strcmp("check", obj->symbol->name)) $$.type = OBJECT_TYPE_BOOL;
+        else $$.type = OBJECT_TYPE_INT;
+    }
+;*/
+
+
+//FunctionList
+//    : FunctionList ',' Expression 
+//    | Expression
+//    | /* Empty array list */
+//;
+
+PrimaryExpression
+    : '(' Expression ')' { $$ = $2; }
+    | CHAR_LIT  {   printf("CHAR_LIT \'%c\'\n", $1); 
+                    codeRaw("\tgetstatic java/lang/System/out Ljava/io/PrintStream;");                
+                    code("\tldc %d", $1);
+                    $$.type = OBJECT_TYPE_CHAR; }
+    | STR_LIT   {   printf("STR_LIT \"%s\"\n", $1);
+                    codeRaw("\tgetstatic java/lang/System/out Ljava/io/PrintStream;");                
+                    code("\tldc \"%s\"", $1);
+                    $$.type = OBJECT_TYPE_STR; }
+    | IdentExpression    
+    | BoolExpression
+    | NumberExpression
+;
+
+IdentExpression
+    : IDENT { 
+            Object *obj = findVariable($1);
+            if(obj){
+                //printf("find\n");
+                printf("IDENT (name=%s, address=%ld)\n", $1, obj->symbol->addr);
+                code("ldc %s", $1);
+                $$.type = obj->type;
+            }
+            else{
+                //printf("not find\n");
+                printf("IDENT (name=%s, address=-1)\n", $1);
+                codeRaw("\tgetstatic java/lang/System/out Ljava/io/PrintStream;");
+                codeRaw("\tldc \"\n\"");
+                $$.type = OBJECT_TYPE_STR;
+            }
+      } 
+    | IDENT '[' Expression ']' {
+            Object *obj = findVariable($1);
+            //printf("IDENT (name=%s, address=%ld)\n", $1, obj->symbol->addr);
+            $$.type = obj->type;
+     }
+    | IDENT '[' Expression ']' '[' Expression ']' { 
+            Object *obj = findVariable($1);
+            //printf("IDENT (name=%s, address=%ld)\n", $1, obj->symbol->addr);
+            $$.type = obj->type;
+     }     
+;
+
+NumberExpression
+    : INT_LIT   {  printf("INT_LIT %d\n", $1);
+                   if(!checkMainReturn()) {
+                       codeRaw("\tgetstatic java/lang/System/out Ljava/io/PrintStream;");
+                       code("\tldc %d", $1);
+                   }
+                   $$.type = OBJECT_TYPE_INT;   }
+    | FLOAT_LIT {  printf("FLOAT_LIT %f\n", $1);
+                   codeRaw("\tgetstatic java/lang/System/out Ljava/io/PrintStream;");
+                   code("\tldc %f", $1);
+                   $$.type = OBJECT_TYPE_FLOAT; }
+;
+
+BoolExpression
+    : BOOL_LIT {   printf("BOOL_LIT %s\n", $1 ? "TRUE" : "FALSE");
+                   code("\ticonst_%d", $1 ? 1 : 0);                    
+                   $$.type = OBJECT_TYPE_BOOL; }
+;
+
+%%
+/* C code section */
