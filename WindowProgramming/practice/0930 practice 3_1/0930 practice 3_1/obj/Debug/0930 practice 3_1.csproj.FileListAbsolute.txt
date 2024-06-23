@@ -1,0 +1,10 @@
+C:\Users\user\Desktop\C#\0930 practice 3_1\0930 practice 3_1\obj\Debug\0930 practice 3_1.csprojAssemblyReference.cache
+C:\Users\user\Desktop\C#\0930 practice 3_1\0930 practice 3_1\obj\Debug\_0930_practice_3_1.Form1.resources
+C:\Users\user\Desktop\C#\0930 practice 3_1\0930 practice 3_1\obj\Debug\_0930_practice_3_1.Properties.Resources.resources
+C:\Users\user\Desktop\C#\0930 practice 3_1\0930 practice 3_1\obj\Debug\0930 practice 3_1.csproj.GenerateResource.cache
+C:\Users\user\Desktop\C#\0930 practice 3_1\0930 practice 3_1\obj\Debug\0930 practice 3_1.csproj.CoreCompileInputs.cache
+C:\Users\user\Desktop\C#\0930 practice 3_1\0930 practice 3_1\bin\Debug\0930 practice 3_1.exe.config
+C:\Users\user\Desktop\C#\0930 practice 3_1\0930 practice 3_1\bin\Debug\0930 practice 3_1.exe
+C:\Users\user\Desktop\C#\0930 practice 3_1\0930 practice 3_1\bin\Debug\0930 practice 3_1.pdb
+C:\Users\user\Desktop\C#\0930 practice 3_1\0930 practice 3_1\obj\Debug\0930 practice 3_1.exe
+C:\Users\user\Desktop\C#\0930 practice 3_1\0930 practice 3_1\obj\Debug\0930 practice 3_1.pdb

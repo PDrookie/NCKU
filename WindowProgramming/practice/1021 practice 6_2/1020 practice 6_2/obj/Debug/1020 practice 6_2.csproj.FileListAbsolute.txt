@@ -1,0 +1,45 @@
+C:\Users\user\Desktop\C#\1020 practice 6_2\1020 practice 6_2\bin\Debug\1020 practice 6_2.exe.config
+C:\Users\user\Desktop\C#\1020 practice 6_2\1020 practice 6_2\bin\Debug\1020 practice 6_2.exe
+C:\Users\user\Desktop\C#\1020 practice 6_2\1020 practice 6_2\bin\Debug\1020 practice 6_2.pdb
+C:\Users\user\Desktop\C#\1020 practice 6_2\1020 practice 6_2\obj\Debug\1020 practice 6_2.csprojAssemblyReference.cache
+C:\Users\user\Desktop\C#\1020 practice 6_2\1020 practice 6_2\obj\Debug\_1020_practice_6_2.Form1.resources
+C:\Users\user\Desktop\C#\1020 practice 6_2\1020 practice 6_2\obj\Debug\_1020_practice_6_2.Properties.Resources.resources
+C:\Users\user\Desktop\C#\1020 practice 6_2\1020 practice 6_2\obj\Debug\1020 practice 6_2.csproj.GenerateResource.cache
+C:\Users\user\Desktop\C#\1020 practice 6_2\1020 practice 6_2\obj\Debug\1020 practice 6_2.csproj.CoreCompileInputs.cache
+C:\Users\user\Desktop\C#\1020 practice 6_2\1020 practice 6_2\obj\Debug\1020 practice 6_2.exe
+C:\Users\user\Desktop\C#\1020 practice 6_2\1020 practice 6_2\obj\Debug\1020 practice 6_2.pdb
+C:\Users\user\Desktop\C#\1020 practice 6_2\1020 practice 6_2\bin\Debug\Interop.WMPLib.dll
+C:\Users\user\Desktop\C#\1020 practice 6_2\1020 practice 6_2\bin\Debug\AxInterop.WMPLib.dll
+C:\Users\user\Desktop\C#\1020 practice 6_2\1020 practice 6_2\obj\Debug\Interop.WMPLib.dll
+C:\Users\user\Desktop\C#\1020 practice 6_2\1020 practice 6_2\obj\Debug\AxInterop.WMPLib.dll
+C:\Users\user\Desktop\C#\1020 practice 6_2\1020 practice 6_2\obj\Debug\1020 practice 6_2.csproj.ResolveComReference.cache
+C:\Users\user\Desktop\C#\1021 practice 6_2\1020 practice 6_2\bin\Debug\1020 practice 6_2.exe.config
+C:\Users\user\Desktop\C#\1021 practice 6_2\1020 practice 6_2\bin\Debug\1020 practice 6_2.exe
+C:\Users\user\Desktop\C#\1021 practice 6_2\1020 practice 6_2\bin\Debug\1020 practice 6_2.pdb
+C:\Users\user\Desktop\C#\1021 practice 6_2\1020 practice 6_2\bin\Debug\Interop.WMPLib.dll
+C:\Users\user\Desktop\C#\1021 practice 6_2\1020 practice 6_2\bin\Debug\AxInterop.WMPLib.dll
+C:\Users\user\Desktop\C#\1021 practice 6_2\1020 practice 6_2\obj\Debug\1020 practice 6_2.csprojAssemblyReference.cache
+C:\Users\user\Desktop\C#\1021 practice 6_2\1020 practice 6_2\obj\Debug\Interop.WMPLib.dll
+C:\Users\user\Desktop\C#\1021 practice 6_2\1020 practice 6_2\obj\Debug\AxInterop.WMPLib.dll
+C:\Users\user\Desktop\C#\1021 practice 6_2\1020 practice 6_2\obj\Debug\1020 practice 6_2.csproj.ResolveComReference.cache
+C:\Users\user\Desktop\C#\1021 practice 6_2\1020 practice 6_2\obj\Debug\_1020_practice_6_2.Form1.resources
+C:\Users\user\Desktop\C#\1021 practice 6_2\1020 practice 6_2\obj\Debug\_1020_practice_6_2.Properties.Resources.resources
+C:\Users\user\Desktop\C#\1021 practice 6_2\1020 practice 6_2\obj\Debug\1020 practice 6_2.csproj.GenerateResource.cache
+C:\Users\user\Desktop\C#\1021 practice 6_2\1020 practice 6_2\obj\Debug\1020 practice 6_2.csproj.CoreCompileInputs.cache
+C:\Users\user\Desktop\C#\1021 practice 6_2\1020 practice 6_2\obj\Debug\1020 practice 6_2.exe
+C:\Users\user\Desktop\C#\1021 practice 6_2\1020 practice 6_2\obj\Debug\1020 practice 6_2.pdb
+C:\Users\Jim\Desktop\C#\practice\1021 practice 6_2\1020 practice 6_2\bin\Debug\1020 practice 6_2.exe.config
+C:\Users\Jim\Desktop\C#\practice\1021 practice 6_2\1020 practice 6_2\bin\Debug\1020 practice 6_2.exe
+C:\Users\Jim\Desktop\C#\practice\1021 practice 6_2\1020 practice 6_2\bin\Debug\1020 practice 6_2.pdb
+C:\Users\Jim\Desktop\C#\practice\1021 practice 6_2\1020 practice 6_2\bin\Debug\Interop.WMPLib.dll
+C:\Users\Jim\Desktop\C#\practice\1021 practice 6_2\1020 practice 6_2\bin\Debug\AxInterop.WMPLib.dll
+C:\Users\Jim\Desktop\C#\practice\1021 practice 6_2\1020 practice 6_2\obj\Debug\1020 practice 6_2.csprojAssemblyReference.cache
+C:\Users\Jim\Desktop\C#\practice\1021 practice 6_2\1020 practice 6_2\obj\Debug\Interop.WMPLib.dll
+C:\Users\Jim\Desktop\C#\practice\1021 practice 6_2\1020 practice 6_2\obj\Debug\AxInterop.WMPLib.dll
+C:\Users\Jim\Desktop\C#\practice\1021 practice 6_2\1020 practice 6_2\obj\Debug\1020 practice 6_2.csproj.ResolveComReference.cache
+C:\Users\Jim\Desktop\C#\practice\1021 practice 6_2\1020 practice 6_2\obj\Debug\_1020_practice_6_2.Form1.resources
+C:\Users\Jim\Desktop\C#\practice\1021 practice 6_2\1020 practice 6_2\obj\Debug\_1020_practice_6_2.Properties.Resources.resources
+C:\Users\Jim\Desktop\C#\practice\1021 practice 6_2\1020 practice 6_2\obj\Debug\1020 practice 6_2.csproj.GenerateResource.cache
+C:\Users\Jim\Desktop\C#\practice\1021 practice 6_2\1020 practice 6_2\obj\Debug\1020 practice 6_2.csproj.CoreCompileInputs.cache
+C:\Users\Jim\Desktop\C#\practice\1021 practice 6_2\1020 practice 6_2\obj\Debug\1020 practice 6_2.exe
+C:\Users\Jim\Desktop\C#\practice\1021 practice 6_2\1020 practice 6_2\obj\Debug\1020 practice 6_2.pdb

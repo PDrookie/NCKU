@@ -1,0 +1,12 @@
+C:\Users\Jim\OneDrive\桌面\C#\practice\practice9_12_9\practice9_12_9\bin\Debug\Database1.mdf
+C:\Users\Jim\OneDrive\桌面\C#\practice\practice9_12_9\practice9_12_9\bin\Debug\Database1_log.ldf
+C:\Users\Jim\OneDrive\桌面\C#\practice\practice9_12_9\practice9_12_9\bin\Debug\practice9_12_9.exe.config
+C:\Users\Jim\OneDrive\桌面\C#\practice\practice9_12_9\practice9_12_9\bin\Debug\practice9_12_9.exe
+C:\Users\Jim\OneDrive\桌面\C#\practice\practice9_12_9\practice9_12_9\bin\Debug\practice9_12_9.pdb
+C:\Users\Jim\OneDrive\桌面\C#\practice\practice9_12_9\practice9_12_9\obj\Debug\practice9_12_9.csprojAssemblyReference.cache
+C:\Users\Jim\OneDrive\桌面\C#\practice\practice9_12_9\practice9_12_9\obj\Debug\practice9_12_9.Form1.resources
+C:\Users\Jim\OneDrive\桌面\C#\practice\practice9_12_9\practice9_12_9\obj\Debug\practice9_12_9.Properties.Resources.resources
+C:\Users\Jim\OneDrive\桌面\C#\practice\practice9_12_9\practice9_12_9\obj\Debug\practice9_12_9.csproj.GenerateResource.cache
+C:\Users\Jim\OneDrive\桌面\C#\practice\practice9_12_9\practice9_12_9\obj\Debug\practice9_12_9.csproj.CoreCompileInputs.cache
+C:\Users\Jim\OneDrive\桌面\C#\practice\practice9_12_9\practice9_12_9\obj\Debug\practice9_12_9.exe
+C:\Users\Jim\OneDrive\桌面\C#\practice\practice9_12_9\practice9_12_9\obj\Debug\practice9_12_9.pdb

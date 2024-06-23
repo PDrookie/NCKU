@@ -1,0 +1,10 @@
+C:\Users\user\Desktop\C#\1021 practice 6_1\1021 practice 6_1\bin\Debug\1021 practice 6_1.exe.config
+C:\Users\user\Desktop\C#\1021 practice 6_1\1021 practice 6_1\bin\Debug\1021 practice 6_1.exe
+C:\Users\user\Desktop\C#\1021 practice 6_1\1021 practice 6_1\bin\Debug\1021 practice 6_1.pdb
+C:\Users\user\Desktop\C#\1021 practice 6_1\1021 practice 6_1\obj\Debug\1021 practice 6_1.csprojAssemblyReference.cache
+C:\Users\user\Desktop\C#\1021 practice 6_1\1021 practice 6_1\obj\Debug\_1021_practice_6_1.Form1.resources
+C:\Users\user\Desktop\C#\1021 practice 6_1\1021 practice 6_1\obj\Debug\_1021_practice_6_1.Properties.Resources.resources
+C:\Users\user\Desktop\C#\1021 practice 6_1\1021 practice 6_1\obj\Debug\1021 practice 6_1.csproj.GenerateResource.cache
+C:\Users\user\Desktop\C#\1021 practice 6_1\1021 practice 6_1\obj\Debug\1021 practice 6_1.csproj.CoreCompileInputs.cache
+C:\Users\user\Desktop\C#\1021 practice 6_1\1021 practice 6_1\obj\Debug\1021 practice 6_1.exe
+C:\Users\user\Desktop\C#\1021 practice 6_1\1021 practice 6_1\obj\Debug\1021 practice 6_1.pdb

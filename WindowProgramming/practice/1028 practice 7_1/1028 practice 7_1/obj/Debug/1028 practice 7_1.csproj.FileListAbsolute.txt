@@ -1,0 +1,11 @@
+C:\Users\Jim\Desktop\C#\1028 practice 7_1\1028 practice 7_1\bin\Debug\1028 practice 7_1.exe.config
+C:\Users\Jim\Desktop\C#\1028 practice 7_1\1028 practice 7_1\bin\Debug\1028 practice 7_1.exe
+C:\Users\Jim\Desktop\C#\1028 practice 7_1\1028 practice 7_1\bin\Debug\1028 practice 7_1.pdb
+C:\Users\Jim\Desktop\C#\1028 practice 7_1\1028 practice 7_1\obj\Debug\1028 practice 7_1.csprojAssemblyReference.cache
+C:\Users\Jim\Desktop\C#\1028 practice 7_1\1028 practice 7_1\obj\Debug\_1028_practice_7_1.Form1.resources
+C:\Users\Jim\Desktop\C#\1028 practice 7_1\1028 practice 7_1\obj\Debug\_1028_practice_7_1.Properties.Resources.resources
+C:\Users\Jim\Desktop\C#\1028 practice 7_1\1028 practice 7_1\obj\Debug\1028 practice 7_1.csproj.GenerateResource.cache
+C:\Users\Jim\Desktop\C#\1028 practice 7_1\1028 practice 7_1\obj\Debug\1028 practice 7_1.csproj.CoreCompileInputs.cache
+C:\Users\Jim\Desktop\C#\1028 practice 7_1\1028 practice 7_1\obj\Debug\1028 practice 7_1.exe
+C:\Users\Jim\Desktop\C#\1028 practice 7_1\1028 practice 7_1\obj\Debug\1028 practice 7_1.pdb
+C:\Users\Jim\Desktop\C#\1028 practice 7_1\1028 practice 7_1\obj\Debug\_1028_practice_7_1.Form2.resources
