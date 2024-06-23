@@ -1,1 +1,0 @@
-./input/data/neib6.txt

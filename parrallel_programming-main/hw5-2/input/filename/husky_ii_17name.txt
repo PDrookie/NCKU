@@ -1,1 +1,0 @@
-./input/data/husky_ii_17.txt
