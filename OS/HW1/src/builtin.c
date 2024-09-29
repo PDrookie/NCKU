@@ -12,7 +12,7 @@
 int help(char **args){
 	int i;
     printf("--------------------------------------------------\n");
-  	printf("My Little Shell!!\n");
+  	printf("My Simple Shell~~\n");
 	printf("The following are built in:\n");
 	for (i = 0; i < num_builtins(); i++) {
     	printf("%d: %s\n", i, builtin_str[i]);
